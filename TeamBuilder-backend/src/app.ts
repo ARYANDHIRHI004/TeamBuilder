@@ -2,7 +2,7 @@ import Express, { urlencoded } from 'express'
 import type { Application } from 'express'
 
 import cors from 'cors'
-import authRouter from './routes/auth.routes'
+import {authRouter} from './routes/auth.routes.js'
 
 function createApp(): Application {
   const app: Application = Express()
@@ -23,4 +23,4 @@ function createApp(): Application {
   return app
 }
 
-export default createApp()
+export const app =  createApp()

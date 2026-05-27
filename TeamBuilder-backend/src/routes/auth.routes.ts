@@ -1,6 +1,6 @@
 import express from 'express'
 import type {Router} from 'express'
-import { registerUser } from '../controllers/auth.controller'
+import { registerUser } from '../controllers/auth.controller.js'
 
 function authRoutes(): Router {
   const authRouter:Router = express.Router()
@@ -10,4 +10,4 @@ function authRoutes(): Router {
   return authRouter;
 }
 
-export default authRoutes
+export const authRouter =  authRoutes()

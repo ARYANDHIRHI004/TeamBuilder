@@ -2,15 +2,17 @@ import { z } from "zod";
 import dotenv from "dotenv";
 
 dotenv.config({
-    path: "./.env"
+    path: "./src/.env"
 });
 
 
 
 const envSchema = z.object({
     PORT: z.string().optional(),
+    DATABASE_URL: z.string()
    
 })
+
 
 function createEnv(env: NodeJS.ProcessEnv){
     const validationResult = envSchema.safeParse(env);
