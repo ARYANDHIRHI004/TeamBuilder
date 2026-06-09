@@ -23,6 +23,17 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
     })
 });
 
+const loginUser = asyncHandler(async (req: Request, res: Response) => {
+
+    res.json({
+    //   token,
+      user: req.user,
+    name:"aryan"
+    });
+
+});
+
 export {
-    registerUser
+    registerUser,
+    loginUser
 }

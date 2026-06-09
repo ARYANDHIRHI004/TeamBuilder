@@ -9,7 +9,9 @@ dotenv.config({
 
 const envSchema = z.object({
     PORT: z.string().optional(),
-    DATABASE_URL: z.string()
+    DATABASE_URL: z.string(),
+    GOOGLE_CLIENT_ID: z.string(),
+    GOOGLE_CLIENT_SECRET: z.string(),
    
 })
 

@@ -1,12 +1,15 @@
 import Express, { urlencoded } from 'express'
 import type { Application } from 'express'
+import passport from './utils/passport.js'
 
 import cors from 'cors'
 import {authRouter} from './routes/auth.routes.js'
 
+
+
 function createApp(): Application {
   const app: Application = Express()
-
+  
   app.use(
     cors({
       origin: '*',
@@ -18,6 +21,7 @@ function createApp(): Application {
   app.use(Express.json())
   app.use(urlencoded({ extended: false }))
 
+  app.use(passport.initialize())
   
 
   app.use('/api/v1/auth/', authRouter)
