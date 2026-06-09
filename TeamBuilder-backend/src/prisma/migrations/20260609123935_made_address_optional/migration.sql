@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "address" DROP NOT NULL,
+ALTER COLUMN "isEmailVerified" DROP NOT NULL;

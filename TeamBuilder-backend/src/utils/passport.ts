@@ -1,6 +1,7 @@
 import passport from 'passport'
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { env } from '../env.js';
+import { prisma } from '../db/db.js';
 
 passport.use(
   new GoogleStrategy(
@@ -12,14 +13,24 @@ passport.use(
     async (accessToken:any, refreshToken:any, profile:any, done:any) => {
       try {
         // Find or create user
+        const existedUser = await prisma.user.findUnique({
+            where:{
+                email: profile.emails[0].value
+            }
+        })
 
-        const user = {
-          id: profile.id,
-          email: profile.emails[0].value,
-          name: profile.displayName
-        };
+        if(!existedUser){
+            const user = await prisma.user.create({
+                data: {
+                    email: profile.emails[0].value,
+                    name: profile.displayName,
+                    isEmailVerified: true
+                }
+            })
+            return done(null, user);
+        }
+        return done(null, existedUser);
 
-        return done(null, user);
       } catch (err) {
         done(err, null);
       }

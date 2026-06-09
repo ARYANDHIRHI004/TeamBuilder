@@ -12,9 +12,9 @@ datasource db {
   provider = "postgresql"
 }
 
-enum status {
-  active
-  inactive
+enum STATUS {
+  ACTIVE
+  INACTIVE
 }
 
 enum Teamroles {
@@ -22,71 +22,188 @@ enum Teamroles {
   MEMBER
 }
 
-enum roles {
+enum UserRole {
   ADMIN
   SUPERADMIN
   STUDENT
 }
 
 
-model User { 
-  id    String     @id @default(uuid())
-  name String
-  email String @unique
-  address String
-  roles roles[]
-  isEmailVerified Boolean?
-  createdAt DateTime @default(now())
-  updatedAtAt DateTime @updatedAt
+model User {
+  id                String   @id @default(uuid())
+  name              String
+  email             String   @unique
+  address           String?
+  roles             UserRole[]
+  isEmailVerified   Boolean  @default(false)
 
-  TeamMembers TeamMembers[]
-  enroledCourses RegisteredUser[]
-} 
+  sessions          Session[]
+  teamMemberships   TeamMember[]
+  applications      TeamJoiningApplication[]
 
-model Teams{
-  id String @id @default(uuid()) 
-  teamName String @unique
-  teamDescription String
-  courseId String
-  status status
-  hiring status
-  createdAt DateTime @default(now())
-  updatedAtAt DateTime @updatedAt
+  reviewsGiven      Review[] @relation("ReviewsGiven")
+  reviewsReceived   Review[] @relation("ReviewsReceived")
 
-  TeamMembers TeamMembers[]
+  registeredCourses RegisteredUser[]
+
+  histories         History[] @relation("UserHistory")
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
+model Course {
+  id                String   @id @default(uuid())
+  courseName        String
+  courseDescription String?
 
-model TeamMembers{
-  id String @id @default(uuid())
-  memberId String
-  TeamId String 
-  Role Teamroles
-  createdAt DateTime @default(now())
-  updatedAtAt DateTime @updatedAt
+  teams             Team[]
+  registeredUsers   RegisteredUser[]
 
-  user User @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  team Teams @relation(fields: [TeamId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
-model Courses{
-  id String @id @default(uuid())
-  courseName String
-  courseDescription String
-  createdAt DateTime @default(now())
-  updatedAtAt DateTime @updatedAt
+model Team {
+  id                String   @id @default(uuid())
+  teamName          String   @unique
+  teamDescription   String?
 
-  enroledUsers RegisteredUser[]
+  courseId          String
+  course            Course   @relation(fields: [courseId], references: [id])
 
+  status            STATUS   @default(ACTIVE)
+  hiring            STATUS @default(ACTIVE)
+
+  members           TeamMember[]
+  applications      TeamJoiningApplication[]
+  notes             Note[]
+
+  reviewsReceived   Review[] @relation("TeamReviews")
+
+  histories         History[] @relation("TeamHistory")
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
-model RegisteredUser{
-  id String @id @default(uuid())
-  courseId String
-  userEmail String
-  createdAt DateTime
-  updatedAtAt DateTime
+model TeamMember {
+  id          String         @id @default(uuid())
 
-  user User @relation(fields: [userEmail], references: [email])
-  course Courses @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  memberId    String
+  member      User           @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  teamId      String
+  team        Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  role        Teamroles @default(MEMBER)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([memberId, teamId])
+}
+
+model TeamJoiningApplication {
+  id          String   @id @default(uuid())
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  teamId      String
+  team        Team     @relation(fields: [teamId], references: [id])
+
+  description String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Note {
+  id          String   @id @default(uuid())
+
+  teamId      String
+  team        Team     @relation(fields: [teamId], references: [id])
+
+  note        String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Review {
+  id          String   @id @default(uuid())
+
+  review      String
+
+  givenById   String
+  givenBy     User     @relation("ReviewsGiven", fields: [givenById], references: [id])
+
+  // Review can be given to either a User or a Team
+  givenToUserId String?
+  givenToUser   User?   @relation("ReviewsReceived", fields: [givenToUserId], references: [id])
+
+  givenToTeamId String?
+  givenToTeam   Team?   @relation("TeamReviews", fields: [givenToTeamId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RegisteredUser {
+  id          String   @id @default(uuid())
+
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+
+  userEmail   String
+
+  user        User?    @relation(fields: [userEmail], references: [email])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Session {
+  id            String   @id @default(uuid())
+
+  refreshToken  String
+  sessions      Int
+
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+
+  systemIP      String?
+  device        String?
+  browser       String?
+
+  latitude      Float?
+  longitude     Float?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Subscription {
+  id          String   @id @default(uuid())
+  description String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model History {
+  id          String   @id @default(uuid())
+
+  description String
+
+  // Either User or Team history
+  userId      String?
+  user        User?    @relation("UserHistory", fields: [userId], references: [id])
+
+  teamId      String?
+  team        Team?    @relation("TeamHistory", fields: [teamId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
