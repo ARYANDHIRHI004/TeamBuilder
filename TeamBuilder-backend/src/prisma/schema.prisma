@@ -12,9 +12,81 @@ datasource db {
   provider = "postgresql"
 }
 
+enum status {
+  active
+  inactive
+}
+
+enum Teamroles {
+  TEAM_LEAD
+  MEMBER
+}
+
+enum roles {
+  ADMIN
+  SUPERADMIN
+  STUDENT
+}
+
 
 model User { 
-  id    Int     @id @default(autoincrement()) 
-  email String  @unique
-  name  String?
+  id    String     @id @default(uuid())
+  name String
+  email String @unique
+  address String
+  roles roles[]
+  isEmailVerified Boolean?
+  createdAt DateTime @default(now())
+  updatedAtAt DateTime @updatedAt
+
+  TeamMembers TeamMembers[]
+  enroledCourses RegisteredUser[]
 } 
+
+model Teams{
+  id String @id @default(uuid()) 
+  teamName String @unique
+  teamDescription String
+  courseId String
+  status status
+  hiring status
+  createdAt DateTime @default(now())
+  updatedAtAt DateTime @updatedAt
+
+  TeamMembers TeamMembers[]
+}
+
+
+model TeamMembers{
+  id String @id @default(uuid())
+  memberId String
+  TeamId String 
+  Role Teamroles
+  createdAt DateTime @default(now())
+  updatedAtAt DateTime @updatedAt
+
+  user User @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  team Teams @relation(fields: [TeamId], references: [id], onDelete: Cascade)
+}
+
+model Courses{
+  id String @id @default(uuid())
+  courseName String
+  courseDescription String
+  createdAt DateTime @default(now())
+  updatedAtAt DateTime @updatedAt
+
+  enroledUsers RegisteredUser[]
+
+}
+
+model RegisteredUser{
+  id String @id @default(uuid())
+  courseId String
+  userEmail String
+  createdAt DateTime
+  updatedAtAt DateTime
+
+  user User @relation(fields: [userEmail], references: [email])
+  course Courses @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}

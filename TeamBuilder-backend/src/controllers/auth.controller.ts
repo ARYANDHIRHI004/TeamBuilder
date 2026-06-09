@@ -5,16 +5,18 @@ import type { Request, Response } from "express";
 
 const registerUser = asyncHandler(async (req: Request, res: Response) => {
 
-    const {name, email } = req.body;
+    const {name, email, address } = req.body;
 
     const savedUser = await prisma.user.create({
-        data:{
+        data:{ 
             name: name,
-            email:email
+            email:email,
+            address:"aryan",
+            isEmailVerified: false
         }
     })
 
-    
+     
     return res.status(200).json({
         message: "success",
         data: savedUser

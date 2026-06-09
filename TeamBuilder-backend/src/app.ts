@@ -18,6 +18,8 @@ function createApp(): Application {
   app.use(Express.json())
   app.use(urlencoded({ extended: false }))
 
+  
+
   app.use('/api/v1/auth/', authRouter)
 
   return app
