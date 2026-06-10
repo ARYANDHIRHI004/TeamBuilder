@@ -2,6 +2,35 @@ import ApiResponse from "../utils/apiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { prisma } from "../db/db.js";
 import type { Request, Response } from "express";
+import jwt from "jsonwebtoken"
+import { env } from "../env.js";
+
+
+const generateAccessTokenAndRefreshToken = (user:any):any =>{
+     const accessToken = jwt.sign(
+        {
+            _id: user.id,
+            name: user.name,
+            email: user.email,
+        },
+        env.ACCESS_TOKEN_SECRET,
+        {
+            expiresIn: "1d"
+        }
+    )
+
+     const refreshToken = jwt.sign(
+        {
+            name: user.name,
+            email: user.email,
+        },
+        env.ACCESS_TOKEN_SECRET,
+        {
+            expiresIn: "10d"
+        }
+    )
+    return {accessToken, refreshToken}
+}
 
 const registerUser = asyncHandler(async (req: Request, res: Response) => {
 
@@ -25,15 +54,42 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
 
 const loginUser = asyncHandler(async (req: Request, res: Response) => {
 
-    res.json({
-    //   token,
-      user: req.user,
-    name:"aryan"
-    });
+    const user = req.user;
+
+    const {accessToken, refreshToken} = generateAccessTokenAndRefreshToken(user);
+
+    const options = {
+        httpOnly: true
+
+    }
+
+    res.status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .redirect("http://localhost:5173/dashboard");
+
+});
+
+const getMe = asyncHandler(async (req: Request, res: Response) => {
+
+    // const userId = req.user.id;
+
+    // const user = await prisma.user.findUnique({
+    //     where: {
+    //         id: userId
+    //     }
+    // })
+
+    // return res.status(200)
+
+    // .json(
+    //     new ApiResponse(200, "user Loged In successfully", {user})
+    // )
 
 });
 
 export {
     registerUser,
-    loginUser
+    loginUser,
+    getMe
 }

@@ -20,7 +20,7 @@ passport.use(
         })
 
         if(!existedUser){
-            const user = await prisma.user.create({
+            const user:any = await prisma.user.create({
                 data: {
                     email: profile.emails[0].value,
                     name: profile.displayName,
