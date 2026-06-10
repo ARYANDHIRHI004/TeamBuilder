@@ -18,9 +18,10 @@ const generateAccessTokenAndRefreshToken = (user:any):any =>{
             expiresIn: "1d"
         }
     )
-
-     const refreshToken = jwt.sign(
+    
+    const refreshToken = jwt.sign(
         {
+            _id: user.id,
             name: user.name,
             email: user.email,
         },
@@ -70,26 +71,37 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
 
 });
 
+const logoutUser =  asyncHandler(async (req: Request, res: Response) => {
+    
+    const userId = req.user?._id;
+    console.log(userId)
+    return res.status(200).json({
+        name:"Aryan"
+    });
+    
+})
+
 const getMe = asyncHandler(async (req: Request, res: Response) => {
 
-    // const userId = req.user.id;
+    const userId = req.user?._id;
 
-    // const user = await prisma.user.findUnique({
-    //     where: {
-    //         id: userId
-    //     }
-    // })
+    const user = await prisma.user.findUnique({
+        where: {
+            id: userId
+        }
+    })
 
-    // return res.status(200)
+    return res.status(200)
 
-    // .json(
-    //     new ApiResponse(200, "user Loged In successfully", {user})
-    // )
+    .json(
+        new ApiResponse(200, "user Loged In successfully", user)
+    )
 
 });
 
 export {
     registerUser,
     loginUser,
-    getMe
+    getMe,
+    logoutUser
 }

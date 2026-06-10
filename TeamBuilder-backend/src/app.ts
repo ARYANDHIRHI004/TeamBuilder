@@ -4,6 +4,7 @@ import passport from './utils/passport.js'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import {authRouter} from './routes/auth.routes.js'
+import { courseRouter } from './routes/courses.routes.js'
 
 
 
@@ -27,6 +28,7 @@ function createApp(): Application {
   
 
   app.use('/api/v1/auth/', authRouter)
+  app.use('/api/v1/courses/', courseRouter)
 
   return app
 }

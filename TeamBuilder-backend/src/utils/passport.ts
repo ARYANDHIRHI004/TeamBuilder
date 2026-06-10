@@ -27,6 +27,12 @@ passport.use(
                     isEmailVerified: true
                 }
             })
+            await prisma.systemRoles.create({
+              data:{
+                userId: user.id,
+                role:"ADMIN"
+              }
+            })
             return done(null, user);
         }
         return done(null, existedUser);
