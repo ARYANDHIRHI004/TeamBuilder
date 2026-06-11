@@ -21,7 +21,8 @@ function createApp(): Application {
     }),
   )
   app.use(Express.json())
-  app.use(urlencoded({ extended: false }))
+  app.use(Express.static("public"))
+  app.use(Express.urlencoded({ extended: false }))
   app.use(cookieParser());
 
   app.use(passport.initialize())

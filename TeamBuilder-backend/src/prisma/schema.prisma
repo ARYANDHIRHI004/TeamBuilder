@@ -45,9 +45,9 @@ model User {
   reviewsGiven      Review[] @relation("ReviewsGiven")
   reviewsReceived   Review[] @relation("ReviewsReceived")
 
-  registeredCourses RegisteredUser[]
 
   histories         History[] @relation("UserHistory")
+  coursesCreaed Course[]
 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -66,6 +66,8 @@ model Course {
   id                String   @id @default(uuid())
   courseName        String
   courseDescription String?
+  createdBy String
+  creater User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
   teams             Team[]
   registeredUsers   RegisteredUser[]
@@ -167,8 +169,6 @@ model RegisteredUser {
   course      Course   @relation(fields: [courseId], references: [id])
 
   userEmail   String
-
-  user        User?    @relation(fields: [userEmail], references: [email])
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

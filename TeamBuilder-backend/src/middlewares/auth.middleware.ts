@@ -27,9 +27,9 @@ export const verifyJwt = async (
 }
 
 
+
 export const systemRoles = (role = []) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    try {
       const userId = req.user?._id
       console.log(userId)
 
@@ -40,7 +40,7 @@ export const systemRoles = (role = []) => {
       })
 
       if (!userRole) {
-        throw new ApiError('you are not member of the project', 400)
+        throw new ApiError('you are not allowed to do anything', 400)
       }
 
       const roles = userRole.role
@@ -50,8 +50,6 @@ export const systemRoles = (role = []) => {
         throw new ApiError('unauthorized request', 400)
       }
       next()
-    } catch (error) {
-      console.log('invalid token', error)
-    }
+   
   }
 }
