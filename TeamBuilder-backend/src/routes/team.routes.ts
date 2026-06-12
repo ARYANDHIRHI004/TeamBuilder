@@ -2,13 +2,14 @@ import { Router } from "express";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { prisma } from "../db/db.js";
 import ApiError from "../utils/apiError.js";
-import { createTeam, getAllTeams, getTeamById } from "../controllers/team.controllers.js";
+import { applyToJoinTeam, approveApplication, createTeam, getAllapplyToJoinTeam, getAllTeams, getTeamById, openHiring, rejectOrRevokeApplication } from "../controllers/team.controllers.js";
+import { teamRoles } from "../middlewares/team.middlewares.js";
 
 const teamRouter = Router();
 
 
 teamRouter.use(verifyJwt);
-const chechStudent = async(req, _, next) => {
+const checkStudent = async(req: any, _: any, next: any) => {
 
     const courseId  = req.params.courseId as string
     const userEmail = req.user?.email
@@ -26,11 +27,16 @@ const chechStudent = async(req, _, next) => {
      next();
 }
 
-teamRouter.route('/:courseId/create-team').post(chechStudent, createTeam);
+teamRouter.route('/:courseId/create-team').post(checkStudent, createTeam);
 teamRouter.route('/:courseId/get-all-teams').get(getAllTeams);
-teamRouter.route('/:courseId/:teamId/get-team-by-id').get(chechStudent, getTeamById);
-// teamRouter.route('/:teamId/open-hirering').get(openHiring);
-// teamRouter.route('/:teamId/apply-to-join-team').post(applyToJoinTeam);
+teamRouter.route('/:courseId/:teamId/get-team-by-id').get(checkStudent, getTeamById);
+teamRouter.route('/:teamId/open-hirering').get(teamRoles(["TEAM_LEAD"]), openHiring);
+teamRouter.route('/:teamId/apply-to-join-team').post(applyToJoinTeam);
 
 
+teamRouter.route('/:teamId/get-all-apply-to-join-team').post(teamRoles(["TEAM_LEAD"]), getAllapplyToJoinTeam);
+teamRouter.route('/:teamId/:applicantUserId/approve-member').post(teamRoles(["TEAM_LEAD"]), approveApplication);
+teamRouter.route('/:teamId/:applicantUserId/reject-member').post(teamRoles(["TEAM_LEAD"]), rejectOrRevokeApplication);
+
+ 
 export default teamRouter ;
