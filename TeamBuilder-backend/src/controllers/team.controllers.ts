@@ -106,7 +106,7 @@ export const openHiring = asyncHandler(async (req: Request, res: Response) => {
   return res.status(200).json(new ApiResponse(200, 'Team is hiring now', team));
 });
 
-export const cloaseHiring = asyncHandler(async (req: Request, res: Response) => {
+export const closeHiring = asyncHandler(async (req: Request, res: Response) => {
     const { courseId, teamId } = req.params;
 
     const team = await prisma.team.update({
@@ -252,4 +252,4 @@ export const rejectOrRevokeApplication = asyncHandler(async (req: Request, res: 
 
 
 
-
+       
