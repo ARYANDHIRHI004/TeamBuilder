@@ -2,6 +2,7 @@ import passport from 'passport'
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { env } from '../env.js';
 import { prisma } from '../db/db.js';
+import ApiError from './apiError.js';
 
 passport.use(
   new GoogleStrategy(
@@ -13,6 +14,17 @@ passport.use(
     async (accessToken:any, refreshToken:any, profile:any, done:any) => {
       try {
         // Find or create user
+
+        const registeredUser = await prisma.registeredUser.findFirst({
+          where:{
+            userEmail: profile.emails[0].value
+          }
+        })
+
+        if(!registeredUser){
+            throw new ApiError('User not registered',400)
+        }
+
         const existedUser = await prisma.user.findUnique({
             where:{
                 email: profile.emails[0].value

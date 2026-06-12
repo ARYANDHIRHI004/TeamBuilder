@@ -76,6 +76,8 @@ model Course {
   updatedAt         DateTime @updatedAt
 }
 
+
+
 model Team {
   id                String   @id @default(uuid())
   teamName          String   @unique
@@ -170,8 +172,11 @@ model RegisteredUser {
 
   userEmail   String
 
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@unique([courseId, userEmail])
 }
 
 model Session {
