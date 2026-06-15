@@ -27,6 +27,7 @@ export const verifyJwt = async (
 
     const decodedToken = jwt.verify(token, env.ACCESS_TOKEN_SECRET)
     console.log(decodedToken)
+
     req.user = decodedToken
     next()
   } catch (error) {
@@ -38,7 +39,7 @@ type roles = 'ADMIN' | 'SUPERADMIN' | 'STUDENT'
 
 export const systemRoles = (role: roles[] = []) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const userId = req.user?._id
+    const userId = (req.user as any)?._id
     console.log(userId)
 
     const userRole = await prisma.systemRoles.findFirst({
@@ -53,7 +54,7 @@ export const systemRoles = (role: roles[] = []) => {
 
     const roles = userRole.role
     if (req.user) {
-      req.user.role = role
+      (req.user as any).role = role
     }
     if (!role.includes(roles)) {
       throw new ApiError('unauthorized request', 400)

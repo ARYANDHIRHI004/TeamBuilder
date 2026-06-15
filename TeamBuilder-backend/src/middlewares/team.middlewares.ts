@@ -8,7 +8,7 @@ type roles = 'TEAM_LEAD' | 'MEMBER';
 
 export const teamRoles = (roles: roles[] = []) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const memberId = req.user?._id
+    const memberId = (req.user as any)?._id
     const {teamId} = req.params
 
     const teamMember = await prisma.teamMember.findFirst({
@@ -29,4 +29,4 @@ export const teamRoles = (roles: roles[] = []) => {
     }
     next()
   }
-}     
+}           

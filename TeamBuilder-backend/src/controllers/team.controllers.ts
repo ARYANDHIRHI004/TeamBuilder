@@ -10,7 +10,7 @@ export const createTeam = asyncHandler(async (req: Request, res: Response) => {
 
   const existedTemaMemberteam = await prisma.teamMember.findFirst({
     where: {
-      memberId: req.user?._id,
+      memberId: (req.user as any)?._id,
     },
   });
 
@@ -40,10 +40,18 @@ export const createTeam = asyncHandler(async (req: Request, res: Response) => {
   const teamMember = await prisma.teamMember.create({
     data: {
       teamId: team.id,
-      memberId: req.user?._id,
+      memberId: (req.user as any)?._id,
       role: 'TEAM_LEAD',
     },
   });
+
+  await prisma.history.create({
+    data:{
+        userId: (req.user as any)?._id,
+        description: `Team created by ${(req.user as any)?.name} with team name ${teamName}`,
+    }
+  })
+
   return res
     .status(200)
     .json(new ApiResponse(200, 'Team created successfully', team));
@@ -135,7 +143,7 @@ export const applyToJoinTeam = asyncHandler(async (req: Request, res: Response) 
 
     const existedTemaMemberteam = await prisma.teamMember.findFirst({
       where: {
-        memberId: req.user?._id,
+        memberId: (req.user as any)?._id,
       },
     });
 
@@ -146,7 +154,7 @@ export const applyToJoinTeam = asyncHandler(async (req: Request, res: Response) 
     const joingingApplication = await prisma.teamJoiningApplication.create({
       data: {
         teamId: `${teamId}`,
-        userId: req.user?._id,
+        userId: (req.user as any)?._id,
         description,
       },
     });
