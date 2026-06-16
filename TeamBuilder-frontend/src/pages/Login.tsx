@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 
 
 const Login= () => {
@@ -14,9 +15,9 @@ const Login= () => {
 
       {/* top banner */}
       <div className="relative z-10 w-full  mb-4 rounded-2xl px-7 py-3.5 flex items-center justify-between text-[13px] font-mono uppercase tracking-[0.12em] text-white/90 bg-gradient-to-r from-[#b8261c] via-[#e8392c] to-[#ff5b41]">
-        <span className="flex items-center gap-2.5">
+        <Link to={"/"} className="flex items-center gap-2.5">
           Teams <span className="w-16 h-px bg-white/40" />
-        </span>
+        </Link>
         <span>Sign in</span>
         <span className="flex items-center gap-2.5">
           <span className="w-16 h-px bg-white/40" /> Workspace

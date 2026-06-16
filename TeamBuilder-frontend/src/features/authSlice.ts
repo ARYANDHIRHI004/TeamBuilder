@@ -1,6 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axiosInstance from "../lib/axios";
-import { loginUser } from "../lib/authApis";
 
 const initialState: any = {
   user: false,

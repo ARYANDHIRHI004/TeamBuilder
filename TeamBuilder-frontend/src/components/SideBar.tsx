@@ -1,4 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { logout } from "../features/authSlice";
+import { logoutUser } from "../lib/authApis";
+import { Loader } from "lucide-react";
 
 interface NavItem {
   label: string;
@@ -22,14 +26,21 @@ interface SidebarProps {
   userName?: string;
   activeItem?: string;
   onNavigate?: (label: string) => void;
-  onLogout?: () => void;
 }
 
 const SideBar: React.FC<SidebarProps> = ({
   activeItem = "DashBoard",
   onNavigate,
-  onLogout,
 }) => {
+
+  const [loader, setLoader] = useState(false)
+  const dispatch = useDispatch()
+  const onLogout = async() => {
+    setLoader(true)
+    await logoutUser()
+    dispatch(logout());
+    setLoader(false)
+  };
   return (
     <aside className="w-64 h-screen bg-[#0d0d0f] border border-[#3a3a3d]  flex flex-col p-5">
       {/* user name */}
@@ -76,13 +87,19 @@ const SideBar: React.FC<SidebarProps> = ({
       </nav>
 
       {/* spacer + logout */}
-      <div className="mt-auto pt-6">
+      <div className="mt-auto pt-6 ">
         <button
           type="button"
           onClick={onLogout}
-          className="w-full border border-[#3a3a3d] rounded-xl py-2.5 text-[#f5f5f3] text-base hover:bg-[#1d1d20] transition-colors"
+          className="w-full border border-[#3a3a3d] rounded-xl py-2.5 text-[#f5f5f3]  hover:bg-[#1d1d20] transition-colors items-center flex justify-center"
         >
-          Logout
+          {
+            !loader?(
+              "Logout"
+            ):(
+              <Loader className="animate-spin " />
+            )
+          }
         </button>
       </div>
     </aside>
