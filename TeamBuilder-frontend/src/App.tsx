@@ -1,38 +1,30 @@
-import { useDispatch, useSelector } from "react-redux";
-import { AuthRoutes } from "./routes/AuthRoutes";
-import { CoursesRoutes } from "./routes/CoursesRoutes";
-import { DashboardRoutes } from "./routes/DashboardRoutes";
+import { useDispatch} from "react-redux";
+
 import { useEffect, useState } from "react";
 import { getMe } from "./features/authSlice";
 import { loginUser } from "./lib/authApis";
+import { RouterProvider} from "react-router-dom";
+import router from "./routes";
+import { Loader } from "lucide-react";
 
 function App() {
   const dispatch = useDispatch();
-  const authUser = useSelector((state: any) => state.auth.user);
   const [loading, setLoading] = useState<boolean | null>(false);
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true)
+ useEffect(() => {
+  (async () => {
+    try {
+      setLoading(true);
       const data = await loginUser();
       dispatch(getMe(data));
-    })();
-    setLoading(false)
-  }, []);
+      // console.log(data) 
+    } finally {
+      setLoading(false);
+    }
+  })();
+}, []);
 
-  return (
-    <div>
-      {!loading ? (
-        <div>
-          <AuthRoutes authUser={authUser} />
-          <DashboardRoutes authUser={authUser} />
-          <CoursesRoutes authUser={authUser} />
-        </div>
-      ) : (
-        <div>Loading</div>
-      )}
-    </div>
-  );
+return !loading? <RouterProvider router={router}/>: <div className="h-screen w-screen flex justify-center items-center"><Loader className="animate-spin" /></div>
+
 }
-
 export default App;

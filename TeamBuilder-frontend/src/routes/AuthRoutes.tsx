@@ -1,18 +1,17 @@
-import { Navigate, Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Login from "../pages/Login";
 import Welcome from "../pages/Welcome";
-export function AuthRoutes({authUser}:any) {
+import Dashboard from "../app/dashboard/Dashboard";
 
+const authRoutes = [
+  {
+    path: "/",
+    element: <Welcome />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+];
 
-  return (
-      <Routes>
-        <Route
-            path="/"
-            element={
-              !authUser ? <Welcome /> : <Navigate to={"/dashboard"} />
-            }
-          />
-        <Route path="/login" element={!authUser ? <Login />: <Navigate to={"/"} />} />
-      </Routes>
-  );
-}
+export { authRoutes };

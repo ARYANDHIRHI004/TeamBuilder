@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "../features/authSlice";
 import { logoutUser } from "../lib/authApis";
 import { Loader } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface NavItem {
   label: string;
@@ -88,6 +89,7 @@ const SideBar: React.FC<SidebarProps> = ({
 
       {/* spacer + logout */}
       <div className="mt-auto pt-6 ">
+        
         <button
           type="button"
           onClick={onLogout}
