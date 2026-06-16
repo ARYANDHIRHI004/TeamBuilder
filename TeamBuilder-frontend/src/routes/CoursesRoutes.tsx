@@ -11,7 +11,7 @@ export function CoursesRoutes({ authUser }: any) {
     <Routes>
       <Route path="/courses/" element={<Layout />}>
         <Route path="/courses/" element={<CourseLayout />}>
-          <Route path="/courses/" element={<Courses />} />
+          <Route path="/courses/" element={authUser??<Courses />} />
           <Route path="/courses/:courseId" element={<CourseDetailedPage />} />
           <Route path="/courses/:courseId/peers" element={<Peers />} />
           <Route path="/courses/:courseId/teams" element={<Teams />} />

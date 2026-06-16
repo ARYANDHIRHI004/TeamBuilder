@@ -11,7 +11,6 @@ export const verifyJwt = async (
   res: Response,
   next: NextFunction,
 ) => {
-  try {
     const token: string = req.cookies?.accessToken
     console.log(token)
 
@@ -30,9 +29,7 @@ export const verifyJwt = async (
 
     req.user = decodedToken
     next()
-  } catch (error) {
-    console.log('invalid token')
-  }
+
 }
 
 type roles = 'ADMIN' | 'SUPERADMIN' | 'STUDENT'

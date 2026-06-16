@@ -4,6 +4,7 @@ import { prisma } from "../db/db.js";
 import type { Request, Response } from "express";
 import jwt from "jsonwebtoken"
 import { env } from "../env.js";
+import ApiError from "../utils/apiError.js";
 
 
 const generateAccessTokenAndRefreshToken = (user:any):any =>{
@@ -90,6 +91,9 @@ const getMe = asyncHandler(async (req: Request, res: Response) => {
             id: userId
         }
     })
+    if(!user){
+        throw new ApiError( "User not found", 400)
+    }
 
     return res.status(200)
 
