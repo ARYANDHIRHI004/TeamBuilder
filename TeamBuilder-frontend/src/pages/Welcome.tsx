@@ -105,7 +105,7 @@ export default function Welcome() {
           className="absolute inset-0 pointer-events-none"
           style={{
             backgroundImage:
-              "repeating-linear-gradient(115deg, transparent 0 38px, rgba(232,57,44,0.04) 38px 39px)",
+              "repeating-linear-gradient(115deg, transparent 0 0px, rgba(232,57,44,0.04) 38px 39px)",
           }}
         />
         <p className="font-mono text-xs uppercase tracking-[0.16em] text-[#e8392c] mb-6">
@@ -134,7 +134,8 @@ export default function Welcome() {
             <div key={label} className="bg-[#0d0d0f] py-8 text-center">
               
               <div className="font-mono text-[11px] uppercase tracking-[0.1em] text-[#9a9a9e] mt-2">
-                {label}
+                {num  + " "+ label}
+                
               </div>
             </div>
           ))}

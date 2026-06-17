@@ -6,7 +6,7 @@ const ProtectedRoutes = () => {
   const authUser = useSelector((state: any) => state.auth.user);
 
 
-  return !authUser ? <Login /> :<Outlet /> ;
+  return !authUser ? <Login/> :<Outlet /> ;
 };
 
 export default ProtectedRoutes;

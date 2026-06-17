@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "../features/authSlice";
 import { logoutUser } from "../lib/authApis";
 import { Loader } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface NavItem {
   label: string;
@@ -36,11 +36,14 @@ const SideBar: React.FC<SidebarProps> = ({
 
   const [loader, setLoader] = useState(false)
   const dispatch = useDispatch()
+  const naviation = useNavigate()
   const onLogout = async() => {
     setLoader(true)
     await logoutUser()
     dispatch(logout());
     setLoader(false)
+    naviation("/login")
+
   };
   return (
     <aside className="w-64 h-screen bg-[#0d0d0f] border border-[#3a3a3d]  flex flex-col p-5">

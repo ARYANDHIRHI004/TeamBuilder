@@ -1,9 +1,10 @@
+import { MoveLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 
 const Login= () => {
   return (
-    <div className="min-h-screen bg-[#0d0d0f] text-[#f5f5f3] flex flex-col items-center  p-6 font-sans relative overflow-hidden">
+    <div className="min-h-screen bg-[#0d0d0f] text-[#f5f5f3] flex flex-col justify-center items-center  p-6 font-sans relative overflow-hidden">
       {/* diagonal texture */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -13,24 +14,15 @@ const Login= () => {
         }}
       />
 
-      {/* top banner */}
-      <div className="relative z-10 w-full  mb-4 rounded-2xl px-7 py-3.5 flex items-center justify-between text-[13px] font-mono uppercase tracking-[0.12em] text-white/90 bg-gradient-to-r from-[#b8261c] via-[#e8392c] to-[#ff5b41]">
-        <Link to={"/"} className="flex items-center gap-2.5">
-          Teams <span className="w-16 h-px bg-white/40" />
-        </Link>
-        <span>Sign in</span>
-        <span className="flex items-center gap-2.5">
-          <span className="w-16 h-px bg-white/40" /> Workspace
-        </span>
-      </div>
+      
 
       {/* main card */}
-      <div className="relative z-10 w-full h-[80vh] max-w-8xl bg-[#161618] border border-[#2a2a2d] rounded-2xl grid grid-cols-1 md:grid-cols-[1.15fr_1fr] overflow-hidden">
+      <div className="relative z-10  h-[80vh] max-w-8xl bg-[#161618] border border-[#2a2a2d] rounded-2xl grid grid-cols-1 md:grid-cols-[1.15fr_1fr] overflow-hidden">
         {/* left / brand panel */}
         <div className="p-10 md:p-14 flex flex-col">
-          <div className="font-mono text-xs uppercase tracking-[0.18em] text-[#e8392c] mb-7">
-            // Team Builder
-          </div>
+          <Link to={"/"} className="font-mono text-xs uppercase tracking-[0.18em] text-[#e8392c] mb-7 flex items-center gap-5">
+            <MoveLeft />// Team Builder
+          </Link>
 
           <h1 className="font-extrabold text-[44px] md:text-[64px] leading-[0.98] tracking-tight mb-2">
             Build your <span className="text-[#e8392c]">team</span>,
