@@ -48,9 +48,9 @@ const SideBar: React.FC<SidebarProps> = ({
   return (
     <aside className="w-64 h-screen bg-[#0d0d0f] border border-[#3a3a3d]  flex flex-col p-5">
       {/* user name */}
-      <div className="text-[#f5f5f3] text-4xl font-medium px-2 mb-4">
+      <Link to="/dashboard" className="text-[#f5f5f3] text-4xl font-medium px-2 mb-4">
         Sishya <span className="text-[#e8392c]">Ji</span>
-      </div>
+      </Link>
 
       {/* main nav */}
       <nav className="flex flex-col gap-3 px-2">

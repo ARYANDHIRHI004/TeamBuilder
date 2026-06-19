@@ -25,7 +25,9 @@ function App() {
   }, []);
 
   return !loading ? (
-    <RouterProvider router={router} />
+    <div className="h-screen  ">
+      <RouterProvider router={router} />
+      </div>
   ) : (
     <div className="h-screen w-screen flex justify-center items-center">
       <Loader className="animate-spin" />

@@ -1,12 +1,12 @@
 // import React from 'react'
 import { Outlet } from 'react-router-dom'
-import SideBar from '../../components/SideBar'
+import CourseSideBar from '../../components/CoursesSideBar'
 
 const  CourseLayout = () => {
   return (
-    <div className="flex">
+    <div className="flex justify-between w-screen  ">
       <Outlet />
-      <SideBar />
+      <CourseSideBar />
     </div>
   )
 }

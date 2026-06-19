@@ -30,7 +30,7 @@ const Login= () => {
             run the work
           </h1>
 
-          <p className="text-[#9a9a9e] text-[15px] leading-relaxed max-w-[360px] mb-10">
+          <p className="text-[#9a9a9e] text-[15px] leading-relaxed max-w-90 mb-10">
             One place to organize members, assign roles, and track progress
             across every project your team owns.
           </p>
@@ -38,19 +38,19 @@ const Login= () => {
           <div className="mt-auto border-t border-[#2a2a2d] pt-6 flex flex-wrap gap-7">
             <div>
               <div className="font-extrabold text-[28px]">1K+</div>
-              <div className="font-mono text-[11px] uppercase tracking-wide text-[#9a9a9e] mt-1 max-w-[110px]">
+              <div className="font-mono text-[11px] uppercase tracking-wide text-[#9a9a9e] mt-1 max-w-27.5">
                 Teams managed
               </div>
             </div>
             <div>
               <div className="font-extrabold text-[28px]">50</div>
-              <div className="font-mono text-[11px] uppercase tracking-wide text-[#9a9a9e] mt-1 max-w-[110px]">
+              <div className="font-mono text-[11px] uppercase tracking-wide text-[#9a9a9e] mt-1 max-w-27.5">
                 Roles &amp; permissions
               </div>
             </div>
             <div>
               <div className="font-extrabold text-[28px]">24/7</div>
-              <div className="font-mono text-[11px] uppercase tracking-wide text-[#9a9a9e] mt-1 max-w-[110px]">
+              <div className="font-mono text-[11px] uppercase tracking-wide text-[#9a9a9e] mt-1 max-w-27.5">
                 Synced activity
               </div>
             </div>
@@ -58,7 +58,7 @@ const Login= () => {
         </div>
 
         {/* right / sign-in panel */}
-        <div className="relative p-10 md:p-12 flex flex-col justify-center border-t md:border-t-0 md:border-l border-[#2a2a2d] bg-gradient-to-br from-[#1d1d20] to-[#121214]">
+        <div className="relative p-10 md:p-12 flex flex-col justify-center border-t md:border-t-0 md:border-l border-[#2a2a2d] bg-linear-to-br from-[#1d1d20] to-[#121214]">
           <div
             className="absolute -top-10 -right-10 w-56 h-56 rounded-full opacity-20 blur-2xl pointer-events-none"
             style={{
@@ -76,7 +76,7 @@ const Login= () => {
 
           <a
           href="http://localhost:8000/api/v1/auth/google" 
-            className="relative z-10 w-full flex items-center justify-center gap-3 bg-white text-[#1f1f1f] rounded-xl py-4 px-5 text-[15px] font-semibold transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_24px_-8px_rgba(232,57,44,0.45)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#e8392c] focus-visible:outline-offset-[3px] active:translate-y-0"
+            className="relative z-10 w-full flex items-center justify-center gap-3 bg-white text-[#1f1f1f] rounded-xl py-4 px-5 text-[15px] font-semibold transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_24px_-8px_rgba(232,57,44,0.45)] focus-visible:outline-2 focus-visible:outline-[#e8392c] focus-visible:outline-offset-[3px] active:translate-y-0"
           >
             <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
               <path
