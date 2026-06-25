@@ -6,6 +6,7 @@ import { loginUser } from "./lib/authApis";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes";
 import { Loader } from "lucide-react";
+import { ThemeProvider } from "@/components/theme-provider";
 
 function App() {
   const dispatch = useDispatch();
@@ -25,9 +26,11 @@ function App() {
   }, []);
 
   return !loading ? (
-    <div className="h-screen  ">
-      <RouterProvider router={router} />
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <div className="h-screen  ">
+        <RouterProvider router={router} />
       </div>
+    </ThemeProvider>
   ) : (
     <div className="h-screen w-screen flex justify-center items-center">
       <Loader className="animate-spin" />

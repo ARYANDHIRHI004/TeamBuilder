@@ -143,7 +143,7 @@ export const addStudentDetails = asyncHandler(
       .on('error', (error: any) => {
         console.error('Error reading CSV:', error.message);
       });
-  },
+    },
 );
 
 export const getPeersAccount = asyncHandler(
