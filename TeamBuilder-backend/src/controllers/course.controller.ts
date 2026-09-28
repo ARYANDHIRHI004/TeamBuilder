@@ -166,7 +166,6 @@ export const addStudentDetails = asyncHandler(
       registeredUsers = await prisma.registeredUser.createManyAndReturn({
         data: dataToInsert,
       });
-<<<<<<< HEAD
     }
 
     return res.status(200).json(
@@ -263,9 +262,7 @@ export const addStudentManual = asyncHandler(
       })
     );
   },
-=======
-    },
->>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
+
 );
 
 export const getPeersAccount = asyncHandler(

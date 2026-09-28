@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import asyncHandler from "../utils/asyncHandler.js";
 import type { Request, Response } from "express";  
 import { prisma } from "../db/db.js";
@@ -30,12 +29,7 @@ export const getUsersHistory = asyncHandler(async (req: Request, res: Response) 
     new ApiResponse(200, "User history fetched successfully", history)
   );
 });
-=======
-import asyncHandler from "../utils/asyncHandler";
-import type { Request, Response } from "express";  
 
-export const getUsersHistory = asyncHandler(async (req:Request, res: Response) => {})
->>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
 
 
 

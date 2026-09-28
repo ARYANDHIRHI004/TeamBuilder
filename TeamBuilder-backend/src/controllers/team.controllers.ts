@@ -11,12 +11,10 @@ export const createTeam = asyncHandler(async (req: Request, res: Response) => {
   const existedTemaMemberteam = await prisma.teamMember.findFirst({
     where: {
       memberId: (req.user as any)?._id,
-<<<<<<< HEAD
       team: {
         courseId: `${courseId}`,
       },
-=======
->>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
+
     },
   });
 
@@ -51,20 +49,13 @@ export const createTeam = asyncHandler(async (req: Request, res: Response) => {
   });
 
   await prisma.history.create({
-<<<<<<< HEAD
     data: {
       userId: (req.user as any)?._id,
       teamId: team.id,
       description: `Team '${teamName}' created by ${(req.user as any)?.name || 'user'}`,
     },
   });
-=======
-    data:{
-        userId: (req.user as any)?._id,
-        description: `Team created by ${(req.user as any)?.name} with team name ${teamName}`,
-    }
-  })
->>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
+
 
   return res
     .status(200)
@@ -180,8 +171,6 @@ export const applyToJoinTeam = asyncHandler(async (req: Request, res: Response) 
   const { teamId } = req.params;
   const { description } = req.body;
   const userId = (req.user as any)?._id;
-
-<<<<<<< HEAD
   const targetTeam = await prisma.team.findUnique({
     where: { id: `${teamId}` },
   });
@@ -195,11 +184,7 @@ export const applyToJoinTeam = asyncHandler(async (req: Request, res: Response) 
       memberId: userId,
       team: {
         courseId: targetTeam.courseId,
-=======
-    const existedTemaMemberteam = await prisma.teamMember.findFirst({
-      where: {
-        memberId: (req.user as any)?._id,
->>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
+
       },
     },
   });
@@ -208,22 +193,13 @@ export const applyToJoinTeam = asyncHandler(async (req: Request, res: Response) 
     throw new ApiError('You are already a member of a team in this course', 400);
   }
 
-<<<<<<< HEAD
   const existingApp = await prisma.teamJoiningApplication.findFirst({
     where: {
       teamId: `${teamId}`,
       userId: userId,
     },
   });
-=======
-    const joingingApplication = await prisma.teamJoiningApplication.create({
-      data: {
-        teamId: `${teamId}`,
-        userId: (req.user as any)?._id,
-        description,
-      },
-    });
->>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
+
 
   if (existingApp) {
     throw new ApiError('You have already applied to join this team', 400);
