@@ -11,22 +11,24 @@ export const createTeam = asyncHandler(async (req: Request, res: Response) => {
   const existedTemaMemberteam = await prisma.teamMember.findFirst({
     where: {
       memberId: (req.user as any)?._id,
+      team: {
+        courseId: `${courseId}`,
+      },
     },
   });
 
   if (existedTemaMemberteam) {
-    throw new ApiError('You are already a member of a team', 400);
+    throw new ApiError('You are already a member of a team in this course', 400);
   }
 
   const existedTeam = await prisma.team.findUnique({
     where: {
       teamName,
-      courseId: `${courseId}`,
     },
   });
 
   if (existedTeam) {
-    throw new ApiError('Team already exist', 400);
+    throw new ApiError('Team name already exists', 400);
   }
 
   const team = await prisma.team.create({
@@ -37,7 +39,7 @@ export const createTeam = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 
-  const teamMember = await prisma.teamMember.create({
+  await prisma.teamMember.create({
     data: {
       teamId: team.id,
       memberId: (req.user as any)?._id,
@@ -46,11 +48,12 @@ export const createTeam = asyncHandler(async (req: Request, res: Response) => {
   });
 
   await prisma.history.create({
-    data:{
-        userId: (req.user as any)?._id,
-        description: `Team created by ${(req.user as any)?.name} with team name ${teamName}`,
-    }
-  })
+    data: {
+      userId: (req.user as any)?._id,
+      teamId: team.id,
+      description: `Team '${teamName}' created by ${(req.user as any)?.name || 'user'}`,
+    },
+  });
 
   return res
     .status(200)
@@ -64,42 +67,77 @@ export const getAllTeams = asyncHandler(async (req: Request, res: Response) => {
     where: {
       courseId: `${courseId}`,
     },
+    include: {
+      members: {
+        include: {
+          member: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
+      applications: true,
+      notes: true,
+    },
   });
-
-  if (!teams) {
-    throw new ApiError('No team are registered', 400);
-  }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, 'Team created successfully', teams));
+    .json(new ApiResponse(200, 'All teams fetched successfully', teams));
 });
 
 export const getTeamById = asyncHandler(async (req: Request, res: Response) => {
-  const { courseId, teamId } = req.params;
+  const { teamId } = req.params;
 
-  const team = await prisma.team.findFirst({
+  const team = await prisma.team.findUnique({
     where: {
-      courseId: `${courseId}`,
       id: `${teamId}`,
+    },
+    include: {
+      members: {
+        include: {
+          member: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
+      applications: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
+      notes: true,
+      course: true,
     },
   });
 
   if (!team) {
-    throw new ApiError('No such team', 400);
+    throw new ApiError('No such team found', 404);
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, 'Team created successfully', team));
+    .json(new ApiResponse(200, 'Team details fetched successfully', team));
 });
 
 export const openHiring = asyncHandler(async (req: Request, res: Response) => {
-  const { courseId, teamId } = req.params;
+  const { teamId } = req.params;
 
   const team = await prisma.team.update({
     where: {
-      courseId: `${courseId}`,
       id: `${teamId}`,
     },
     data: {
@@ -107,156 +145,186 @@ export const openHiring = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 
-  if (!team) {
-    throw new ApiError('No such team', 400);
-  }
-
   return res.status(200).json(new ApiResponse(200, 'Team is hiring now', team));
 });
 
 export const closeHiring = asyncHandler(async (req: Request, res: Response) => {
-    const { courseId, teamId } = req.params;
+  const { teamId } = req.params;
 
-    const team = await prisma.team.update({
-      where: {
-        courseId: `${courseId}`,
-        id: `${teamId}`,
-      },
-      data: {
-        hiring: 'INACTIVE',
-      },
-    });
+  const team = await prisma.team.update({
+    where: {
+      id: `${teamId}`,
+    },
+    data: {
+      hiring: 'INACTIVE',
+    },
+  });
 
-    if (!team) {
-      throw new ApiError('No such team', 400);
-    }
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, 'Team is not hiring now', team));
-  },
-);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, 'Team is not hiring now', team));
+});
 
 export const applyToJoinTeam = asyncHandler(async (req: Request, res: Response) => {
-    const { teamId } = req.params;
-    const { description } = req.body;
+  const { teamId } = req.params;
+  const { description } = req.body;
+  const userId = (req.user as any)?._id;
 
-    const existedTemaMemberteam = await prisma.teamMember.findFirst({
-      where: {
-        memberId: (req.user as any)?._id,
+  const targetTeam = await prisma.team.findUnique({
+    where: { id: `${teamId}` },
+  });
+
+  if (!targetTeam) {
+    throw new ApiError('Team does not exist', 404);
+  }
+
+  const existedTeamMember = await prisma.teamMember.findFirst({
+    where: {
+      memberId: userId,
+      team: {
+        courseId: targetTeam.courseId,
       },
-    });
+    },
+  });
 
-    if (existedTemaMemberteam) {
-      throw new ApiError('You are already a member of a team', 400);
-    }
+  if (existedTeamMember) {
+    throw new ApiError('You are already a member of a team in this course', 400);
+  }
 
-    const joingingApplication = await prisma.teamJoiningApplication.create({
-      data: {
-        teamId: `${teamId}`,
-        userId: (req.user as any)?._id,
-        description,
-      },
-    });
+  const existingApp = await prisma.teamJoiningApplication.findFirst({
+    where: {
+      teamId: `${teamId}`,
+      userId: userId,
+    },
+  });
 
-    if (!joingingApplication) {
-      throw new ApiError('No such team', 400);
-    }
+  if (existingApp) {
+    throw new ApiError('You have already applied to join this team', 400);
+  }
 
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          'Applied in team successfully',
-          joingingApplication,
-        ),
-      );
-  },
-);
+  const joiningApplication = await prisma.teamJoiningApplication.create({
+    data: {
+      teamId: `${teamId}`,
+      userId: userId,
+      description,
+    },
+  });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        'Applied to team successfully',
+        joiningApplication,
+      ),
+    );
+});
 
 export const getAllapplyToJoinTeam = asyncHandler(async (req: Request, res: Response) => {
-    const { teamId } = req.params;
+  const { teamId } = req.params;
 
-    const joingingApplication = await prisma.teamJoiningApplication.findMany({
-      where: {
-        teamId: `${teamId}`,
+  const joiningApplications = await prisma.teamJoiningApplication.findMany({
+    where: {
+      teamId: `${teamId}`,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
       },
-    });
+    },
+  });
 
-    if (!joingingApplication) {
-      throw new ApiError('No any application', 400);
-    }
-
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          'All application fetched successfully',
-          joingingApplication,
-        ),
-      );
-  },
-);
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        'All applications fetched successfully',
+        joiningApplications,
+      ),
+    );
+});
 
 export const approveApplication = asyncHandler(async (req: Request, res: Response) => {
-    const { teamId, applicantUserId } = req.params;
+  const { teamId, applicantUserId } = req.params;
 
-    const joingingApplication = await prisma.teamJoiningApplication.findUnique({
-      where: {
-        id: `${applicantUserId}`,
-        teamId: `${teamId}`,
-      },
-    });
+  const joiningApplication = await prisma.teamJoiningApplication.findFirst({
+    where: {
+      teamId: `${teamId}`,
+      OR: [
+        { id: `${applicantUserId}` },
+        { userId: `${applicantUserId}` },
+      ],
+    },
+  });
 
-    if (!joingingApplication) {
-      throw new ApiError('No such application', 400);
-    }
+  if (!joiningApplication) {
+    throw new ApiError('No such application found', 404);
+  }
 
-    const approvedApplication = await prisma.teamMember.create({
-      data: {
-        teamId: `${teamId}`,
-        memberId: joingingApplication.userId,
-      },
-    });
+  const approvedMember = await prisma.teamMember.create({
+    data: {
+      teamId: `${teamId}`,
+      memberId: joiningApplication.userId,
+      role: 'MEMBER',
+    },
+  });
 
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(200, 'Application is accepted', approvedApplication),
-      );
-  },
-);
+  await prisma.teamJoiningApplication.delete({
+    where: {
+      id: joiningApplication.id,
+    },
+  });
+
+  await prisma.history.create({
+    data: {
+      userId: joiningApplication.userId,
+      teamId: `${teamId}`,
+      description: `User was approved as a team member`,
+    },
+  });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, 'Application accepted and member added', approvedMember),
+    );
+});
 
 export const rejectOrRevokeApplication = asyncHandler(async (req: Request, res: Response) => {
-    const { teamId, applicantUserId } = req.params;
+  const { teamId, applicantUserId } = req.params;
 
-    const joingingApplication = await prisma.teamJoiningApplication.findUnique({
-      where: {
-        id: `${applicantUserId}`,
-        teamId: `${teamId}`,
-      },
-    });
+  const joiningApplication = await prisma.teamJoiningApplication.findFirst({
+    where: {
+      teamId: `${teamId}`,
+      OR: [
+        { id: `${applicantUserId}` },
+        { userId: `${applicantUserId}` },
+      ],
+    },
+  });
 
-    if (!joingingApplication) {
-      throw new ApiError('No such application', 400);
-    }
+  if (!joiningApplication) {
+    throw new ApiError('No such application found', 404);
+  }
 
-    const rejectedApplication = await prisma.teamJoiningApplication.delete({
-      where: {
-        id: `${applicantUserId}`,
-        teamId: `${teamId}`,
-      },
-    });
+  const rejectedApplication = await prisma.teamJoiningApplication.delete({
+    where: {
+      id: joiningApplication.id,
+    },
+  });
 
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(200, 'Application is revoked', rejectedApplication),
-      );
-  },
-);
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, 'Application revoked/rejected', rejectedApplication),
+    );
+});
 
 
 

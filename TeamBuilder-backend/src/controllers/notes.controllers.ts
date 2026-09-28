@@ -37,55 +37,49 @@ export const getAllNotes = asyncHandler(async (req: Request, res: Response) => {
 }) 
 
 export const getNoteById = asyncHandler(async (req: Request, res: Response) => {
-    const {teamId, noteId} = req.params
+    const { noteId } = req.params;
 
     const note = await prisma.note.findUnique({
         where: {
             id: `${noteId}`,
-            teamId: `${teamId}`,
         },
     });
 
     return res.status(200).json(
         new ApiResponse(200, 'Note fetched successfully', note),
-    )
-}) 
+    );
+}); 
 
 export const updateNoteById = asyncHandler(async (req: Request, res: Response) => {
-
-    const {teamId, noteId} = req.params
-    const {note} = req.body
+    const { noteId } = req.params;
+    const { note } = req.body;
 
     const updatedNote = await prisma.note.update({
         where: {
             id: `${noteId}`,
-            teamId: `${teamId}`,
         },
-        data: note
+        data: {
+            note,
+        },
     });
 
     return res.status(200).json(
         new ApiResponse(200, 'Note updated successfully', updatedNote),
-    )
-
-
-}) 
+    );
+}); 
 
 export const deleteNoteById = asyncHandler(async (req: Request, res: Response) => {
-
-    const {teamId, noteId} = req.params
+    const { noteId } = req.params;
 
     const deletedNote = await prisma.note.delete({
         where: {
             id: `${noteId}`,
-            teamId: `${teamId}`,
         },
     });
 
     return res.status(200).json(
         new ApiResponse(200, 'Note deleted successfully', deletedNote),
-    )
-
-}) 
+    );
+}); 
 
 
