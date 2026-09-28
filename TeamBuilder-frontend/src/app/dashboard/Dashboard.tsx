@@ -134,6 +134,7 @@ function InitialsAvatar({ initials, dashed = false }: { initials: string; dashed
         {initials.slice(0, 2)}
       </AvatarFallback>
     </Avatar>
+
   );
 }
 
@@ -172,6 +173,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userName = "Aryan" }) => {
               </div>
             </CardContent>
           </Card>
+
         ))}
       </div>
 
@@ -195,6 +197,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userName = "Aryan" }) => {
                 >
                   {/* icon */}
                   <div className={cn("flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-lg font-bold text-white", c.iconBg)}>
+
                     {c.icon}
                   </div>
                   {/* info */}
@@ -204,6 +207,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userName = "Aryan" }) => {
                     <Badge variant="secondary" className="mt-1.5 border-green-200 bg-green-50 text-[11px] font-medium text-green-600 dark:border-green-900 dark:bg-green-900/20 dark:text-green-400">
                       Enrolled
                     </Badge>
+
                   </div>
                   {/* team / no-team */}
                   <div className="flex-1">
@@ -216,6 +220,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userName = "Aryan" }) => {
                         <div className="flex gap-2">
                           <Button size="sm" className="text-xs">Create Team</Button>
                           <Button size="sm" variant="outline" className="text-xs">Join Team</Button>
+
                         </div>
                       </div>
                     ) : (
@@ -230,6 +235,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userName = "Aryan" }) => {
                         <div>
                           <p className="text-[11px] text-muted-foreground">Role</p>
                           <p className="mt-0.5 text-sm font-semibold text-foreground">{c.role}</p>
+
                         </div>
                       </div>
                     )}
@@ -241,6 +247,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userName = "Aryan" }) => {
                       <Button size="sm" variant="outline" className="whitespace-nowrap text-xs">
                         View Team
                       </Button>
+
                     </div>
                   )}
                 </div>
@@ -346,6 +353,111 @@ const Dashboard: React.FC<DashboardProps> = ({ userName = "Aryan" }) => {
               ))}
             </CardContent>
           </Card>
+            </div>
+          </div>
+
+          {/* My Teams */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-bold text-gray-900 text-base">My Teams</h2>
+              <button className="text-sm text-purple-600 font-medium hover:underline">View All Teams</button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {TEAMS.map((t) => (
+                <div key={t.id} className="border border-gray-100 rounded-2xl p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-bold text-gray-900 text-sm">{t.name}</p>
+                    {t.role === "Leader" && (
+                      <span className="text-[10px] text-green-600 bg-green-50 border border-green-200 rounded-full px-2 py-0.5 font-semibold">
+                        Leader
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400 mb-4">{t.course}</p>
+                  {/* avatars */}
+                  <div className="flex items-center gap-1 mb-4">
+                    {t.avatars.map((a) => <Avatar key={a} initials={a} />)}
+                    {t.members < t.maxMembers && <Avatar initials="+" dashed />}
+                  </div>
+                  {/* footer */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <span>👥</span>
+                      <span>{t.members}/{t.maxMembers} Members</span>
+                      <span className={`ml-2 text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${
+                        t.status === "Complete"
+                          ? "bg-green-50 text-green-600 border border-green-200"
+                          : "bg-blue-50 text-blue-600 border border-blue-200"
+                      }`}>
+                        {t.status}
+                      </span>
+                    </div>
+                    <button className="border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs font-semibold px-4 py-2 rounded-xl transition-colors">
+                      View Team
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── RIGHT COLUMN ── */}
+        <div className="w-72 shrink-0 flex flex-col gap-5">
+
+          {/* Pending Invitation */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-bold text-gray-900 text-sm">Pending Invitation</h2>
+              <button className="text-xs text-purple-600 font-medium hover:underline">View All</button>
+            </div>
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600 text-lg shrink-0">
+                👥
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-gray-900 text-sm">Team Nexus</p>
+                <p className="text-xs text-gray-400">Artificial Intelligence</p>
+                <p className="text-xs text-gray-400 mt-0.5">Invited by Rahul Sharma</p>
+              </div>
+              <span className="text-[11px] text-gray-400 shrink-0">10 min ago</span>
+            </div>
+            <div className="flex gap-2">
+              <button className="flex-1 border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs font-semibold py-2 rounded-xl transition-colors">
+                Decline
+              </button>
+              <button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold py-2 rounded-xl transition-colors">
+                Accept
+              </button>
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-bold text-gray-900 text-sm">Recent Activity</h2>
+              <button className="text-xs text-purple-600 font-medium hover:underline">View All</button>
+            </div>
+            <div className="flex flex-col gap-3">
+              {ACTIVITY.map((a) => (
+                <div key={a.id} className="flex items-start gap-3">
+                  <div className={`w-8 h-8 ${a.iconBg} ${a.iconColor} rounded-lg flex items-center justify-center text-sm shrink-0`}>
+                    {a.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-gray-800 truncate">{a.title}</p>
+                    <p className="text-[11px] text-gray-400 truncate">{a.subtitle}</p>
+                  </div>
+                  <span className="text-[10px] text-gray-400 shrink-0">{a.time}</span>
+                </div>
+              ))}
+            </div>
+            <button className="w-full text-center text-xs text-purple-600 font-medium mt-4 hover:underline">
+              View All Activity
+            </button>
+          </div>
+
+          
         </div>
       </div>
     </div>

@@ -70,6 +70,7 @@ function Avatar({ initials, size = "md" }: { initials: string; size?: "sm" | "md
   );
 }
 
+<<<<<<< HEAD
 import { ProgressDoughnut, TaskActivityBar, MemberDistributionPie } from "@/components/ChartComponents";
 
 function MiniRing({ value, max }: { value: number; max: number }) {
@@ -78,6 +79,37 @@ function MiniRing({ value, max }: { value: number; max: number }) {
 
 function BigRing({ pct, label }: { pct: number; label: string }) {
   return <ProgressDoughnut value={pct} max={100} label={label} size={112} color="#7c3aed" />;
+=======
+function MiniRing({ value, max }: { value: number; max: number }) {
+  const r = 14, circ = 2 * Math.PI * r, pct = max === 0 ? 0 : value / max;
+  return (
+    <div className="relative w-9 h-9 flex items-center justify-center">
+      <svg width="36" height="36" className="-rotate-90">
+        <circle cx="18" cy="18" r={r} fill="none" stroke="#e5e7eb" strokeWidth="3" />
+        <circle cx="18" cy="18" r={r} fill="none" stroke="#7c3aed" strokeWidth="3"
+          strokeDasharray={`${pct * circ} ${circ}`} strokeLinecap="round" />
+      </svg>
+      <span className="absolute text-[9px] font-bold text-gray-600">{value}</span>
+    </div>
+  );
+}
+
+function BigRing({ pct, label }: { pct: number; label: string }) {
+  const r = 44, circ = 2 * Math.PI * r;
+  return (
+    <div className="relative w-28 h-28 flex items-center justify-center">
+      <svg width="112" height="112" className="-rotate-90">
+        <circle cx="56" cy="56" r={r} fill="none" stroke="#e5e7eb" strokeWidth="9" />
+        <circle cx="56" cy="56" r={r} fill="none" stroke="#7c3aed" strokeWidth="9"
+          strokeDasharray={`${(pct / 100) * circ} ${circ}`} strokeLinecap="round" />
+      </svg>
+      <div className="absolute text-center">
+        <p className="text-xl font-black text-gray-900">{pct}%</p>
+        <p className="text-[10px] text-gray-400 leading-tight">{label}</p>
+      </div>
+    </div>
+  );
+>>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
 }
 
 const PRIORITY_STYLE: Record<Task["priority"], string> = {
@@ -107,6 +139,7 @@ const TeamDetailPage: React.FC<TeamDetailProps> = ({ onBack }) => {
 
   return (
     <div className="flex-1 bg-gray-50 overflow-auto h-screen font-sans">
+<<<<<<< HEAD
       {/* ── Top bar ── */}
       <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
         <button
@@ -116,6 +149,11 @@ const TeamDetailPage: React.FC<TeamDetailProps> = ({ onBack }) => {
           ← Back to Teams
         </button>
       </div>
+=======
+
+      {/* ── Top bar ── */}
+      
+>>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
 
       <div className="flex gap-5 p-6">
 
@@ -328,6 +366,7 @@ const TeamDetailPage: React.FC<TeamDetailProps> = ({ onBack }) => {
                 </div>
               )}
 
+<<<<<<< HEAD
               {/* ── Resources Tab ── */}
               {activeTab === "Resources" && (
                 <div className="flex flex-col gap-4">
@@ -389,6 +428,12 @@ const TeamDetailPage: React.FC<TeamDetailProps> = ({ onBack }) => {
                     <h4 className="font-bold text-gray-900 text-xs mb-3">Member Contribution</h4>
                     <MemberDistributionPie />
                   </div>
+=======
+              {/* Other tabs placeholder */}
+              {!["Overview", "Members", "Tasks"].includes(activeTab) && (
+                <div className="flex items-center justify-center py-16 text-gray-400 text-sm">
+                  {activeTab} content goes here
+>>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
                 </div>
               )}
             </div>

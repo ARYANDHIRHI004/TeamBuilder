@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getAllTeams, createTeam, applyToJoinTeam } from "@/lib/teamApis";
@@ -295,3 +296,14 @@ const Teams: React.FC = () => {
 };
 
 export default Teams;
+=======
+import React from 'react'
+
+const Teams = () => {
+  return (
+    <div>Teams</div>
+  )
+}
+
+export default Teams
+>>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704

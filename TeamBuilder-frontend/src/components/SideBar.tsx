@@ -15,11 +15,22 @@ interface SidebarProps {
 }
 
 const NAV_ITEMS: NavItem[] = [
+<<<<<<< HEAD
   { id: "dashboard",   icon: "🏠", label: "Dashboard", href: "/dashboard" },
   { id: "courses",     icon: "📖", label: "My Courses", href: "/courses" },
   { id: "teams",       icon: "👥", label: "My Teams", href: "/teams" },
   { id: "peers",       icon: "🤝", label: "Peers & Network", href: "/peers" },
   { id: "profile",     icon: "👤", label: "Profile", href: "/profile" },
+=======
+  { id: "dashboard",   icon: "🏠", label: "Dashboard", href:"/" },
+  { id: "courses",     icon: "📖", label: "My Courses", href:"/courses" },
+  { id: "teams",       icon: "👤", label: "My Teams", href:"/" },
+  { id: "invitations", icon: "📥", label: "Invitations", badge: 1, href:"/" },
+  { id: "activity",    icon: "📊", label: "Activity Log", href:"/" },
+  { id: "messages",    icon: "💬", label: "Messages", href:"/" },
+  { id: "profile",     icon: "👤", label: "Profile", href:"/" },
+  { id: "help",        icon: "❓", label: "Help Center", href:"/" },
+>>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
 ];
 
 const SideBar: React.FC<SidebarProps> = ({
@@ -34,6 +45,7 @@ const SideBar: React.FC<SidebarProps> = ({
   };
 
   return (
+<<<<<<< HEAD
     <aside className="w-56 h-screen bg-background border-r border-border flex flex-col shrink-0 shadow-sm transition-all delay-100">
 
       {/* ── Logo ── */}
@@ -44,11 +56,27 @@ const SideBar: React.FC<SidebarProps> = ({
         <div className="leading-tight">
           <p className="font-extrabold text-primary text-sm leading-none">Team Management</p>
           <p className="text-[11px] text-primary mt-0.5">System</p>
+=======
+    <aside className="w-56 h-screen bg-white border-r border-gray-100 flex flex-col shrink-0 shadow-sm">
+
+      {/* ── Logo ── */}
+      <div className="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
+        <div className="w-9 h-9 bg-purple-600 rounded-xl flex items-center justify-center shrink-0">
+          <span className="text-white text-base font-black">👥</span>
+        </div>
+        <div className="leading-tight">
+          <p className="font-extrabold text-gray-900 text-sm leading-none">Team Management</p>
+          <p className="text-[11px] text-gray-400 mt-0.5">System</p>
+>>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
         </div>
       </div>
 
       {/* ── Nav ── */}
+<<<<<<< HEAD
       <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 ">
+=======
+      <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
+>>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
         {NAV_ITEMS.map(({ id, icon, label, badge, href }) => {
           const isActive = active === id;
           return (
@@ -59,7 +87,11 @@ const SideBar: React.FC<SidebarProps> = ({
               onClick={() => handleClick(id)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
                 isActive
+<<<<<<< HEAD
                   ? "bg-foreground text-secondary shadow-sm"
+=======
+                  ? "bg-purple-600 text-white shadow-sm"
+>>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
@@ -69,7 +101,11 @@ const SideBar: React.FC<SidebarProps> = ({
                 <span
                   className={`text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
                     isActive
+<<<<<<< HEAD
                       ? "bg-white text-"
+=======
+                      ? "bg-white text-purple-600"
+>>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
                       : "bg-purple-600 text-white"
                   }`}
                 >

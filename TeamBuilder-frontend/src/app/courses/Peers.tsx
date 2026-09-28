@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getPeersAccount } from "@/lib/courseApis";
@@ -190,3 +191,14 @@ const Peers: React.FC = () => {
 };
 
 export default Peers;
+=======
+import React from 'react'
+
+const Peers = () => {
+  return (
+    <div>Peers</div>
+  )
+}
+
+export default Peers
+>>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704

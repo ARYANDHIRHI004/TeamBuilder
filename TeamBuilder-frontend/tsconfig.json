@@ -5,7 +5,10 @@
     { "path": "./tsconfig.node.json" },
   ],
   "compilerOptions": {
+<<<<<<< HEAD
     "ignoreDeprecations": "5.0",
+=======
+>>>>>>> 6245d4224e7fffcc0f4aa729bd3a27afe6682704
     "baseUrl": ".",
     "paths": {
       "@/*": [
