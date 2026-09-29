@@ -1,13 +1,15 @@
 import { useSelector } from "react-redux";
-import { Outlet } from "react-router-dom";
-
-import Login from "../pages/Login";
+import { Navigate, Outlet } from "react-router-dom";
 
 const ProtectedRoutes = () => {
   const authUser = useSelector((state: any) => state.auth.user);
 
+  // Not logged in → send to login page
+  if (!authUser) {
+    return <Navigate to="/login" replace />;
+  }
 
-  return !authUser ? <Login/> :<Outlet /> ;
+  return <Outlet />;
 };
 
 export default ProtectedRoutes;

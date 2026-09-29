@@ -1,9 +1,21 @@
 import { ModeToggle } from "@/components/mode-toggle";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Bell } from "lucide-react";
+import { ArrowLeft, Bell, Shield, User } from "lucide-react";
+import { useSelector } from "react-redux";
+import { extractUser, getUserRoles, isAdminUser } from "@/lib/authUtils";
+
+const initialsOf = (name?: string) =>
+  name ? name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() : "U";
 
 const NavBar = () => {
   const navigate = useNavigate();
+  const rawUser = useSelector((state: any) => state.auth.user);
+  const user = extractUser(rawUser);
+
+  const userName = user?.name || "User";
+  const roles = getUserRoles(rawUser);
+  const isUserAdmin = isAdminUser(rawUser);
+  const displayRole = isUserAdmin ? "Admin" : roles.includes("STUDENT") ? "Student" : roles[0] || "User";
 
   return (
     <div className="flex items-center justify-between px-6 py-4 bg-background border-b border-border sticky top-0 z-30 transition-all">
@@ -31,11 +43,14 @@ const NavBar = () => {
           className="flex items-center gap-2.5 bg-card border border-border rounded-xl px-3 py-1.5 shadow-sm hover:border-purple-300 transition-all cursor-pointer"
         >
           <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-xs">
-            AV
+            {initialsOf(userName)}
           </div>
           <div className="hidden sm:block text-left">
-            <p className="text-xs font-bold text-primary leading-tight">Aryan Verma</p>
-            <p className="text-[10px] text-gray-400 leading-none">Student</p>
+            <p className="text-xs font-bold text-primary leading-tight flex items-center gap-1">
+              {userName}
+              {isUserAdmin && <Shield className="w-3 h-3 text-amber-500 fill-amber-500/20" />}
+            </p>
+            <p className="text-[10px] text-muted-foreground leading-none">{displayRole}</p>
           </div>
         </Link>
       </div>
@@ -44,4 +59,3 @@ const NavBar = () => {
 };
 
 export default NavBar;
-

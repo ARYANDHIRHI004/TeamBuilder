@@ -7,6 +7,7 @@ import { RouterProvider } from "react-router-dom";
 import router from "./routes";
 import { Loader } from "lucide-react";
 import { ThemeProvider } from "@/components/theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 function App() {
   const dispatch = useDispatch();
@@ -27,9 +28,11 @@ function App() {
 
   return !loading ? (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <div className="h-screen  ">
-        <RouterProvider router={router} />
-      </div>
+      <TooltipProvider>
+        <div className="h-screen">
+          <RouterProvider router={router} />
+        </div>
+      </TooltipProvider>
     </ThemeProvider>
   ) : (
     <div className="h-screen w-screen flex justify-center items-center">

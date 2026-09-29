@@ -92,6 +92,9 @@ const getMe = asyncHandler(async (req: Request, res: Response) => {
     where: {
       id: userId,
     },
+    include: {
+      roles: true,
+    },
   });
   if (!user) {
     throw new ApiError('User not found', 400);

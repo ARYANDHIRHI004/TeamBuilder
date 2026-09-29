@@ -71,6 +71,8 @@ interface AdminDashboardProps {
   admins?: AdminUser[];
   cohorts?: Cohort[];
   loading?: boolean;
+  /** The authenticated admin user object from Redux state */
+  user?: any;
   /** Should persist the cohort. Throw to surface an error inside the dialog. */
   onCreateCohort: (input: CreateCohortInput) => Promise<void>;
 }
@@ -112,8 +114,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   admins = [],
   cohorts = [],
   loading = false,
+  user,
   onCreateCohort,
 }) => {
+  const adminName: string =
+    (user?.data?.name ?? user?.name) || "Admin";
   const [cohortSearch, setCohortSearch] = useState("");
   const [adminSearch, setAdminSearch] = useState("");
   const [open, setOpen] = useState(false);
@@ -190,7 +195,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Admin Dashboard</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Welcome, {adminName} 👋</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Manage cohorts, review admins, and keep an eye on enrollment across the platform.
           </p>
