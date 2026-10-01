@@ -70,7 +70,7 @@ interface LayoutProps extends SidebarProps {
 // ── Admin nav items ──────────────────────────────────────────────────────────
 const ADMIN_NAV: AdminNavItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Cohorts", url: "/admin/cohorts", icon: Layers },
+  { title: "Cohorts", url: "/courses", icon: Layers },
   { title: "Admins", url: "/admin/admins", icon: ShieldCheck },
   { title: "Students", url: "/admin/students", icon: GraduationCap },
   { title: "Courses", url: "/admin/courses", icon: BookOpen },

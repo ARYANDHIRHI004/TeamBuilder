@@ -277,7 +277,7 @@ export const getPeersAccount = asyncHandler(
 
     const emails = registrations.map((registration) => registration.userEmail);
 
-    console.log(emails)
+    // console.log(emails)
 
     const users = await prisma.user.findMany({
       where:{
@@ -286,6 +286,8 @@ export const getPeersAccount = asyncHandler(
         }
       }
     })
+
+    console.log(users)
 
     return res
       .status(200)

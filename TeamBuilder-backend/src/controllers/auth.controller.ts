@@ -52,7 +52,39 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const loginUser = asyncHandler(async (req: Request, res: Response) => {
-  const user = req.user;
+  const user = req.user as any;
+
+  // ── Enrollment gate ────────────────────────────────────────────────────────
+  // Check whether this user has an ADMIN or SUPERADMIN system role.
+  // If they do, let them through unconditionally.
+  // If they don't, they MUST have been pre-registered by an admin in at least
+  // one course (i.e. have a row in RegisteredUser matching their email).
+
+  const systemRole = await prisma.systemRoles.findFirst({
+    where: { userId: user.id },
+  });
+
+  const isAdmin =
+    systemRole?.role === 'ADMIN' || systemRole?.role === 'SUPERADMIN';
+
+  if (!isAdmin) {
+    const registration = await prisma.registeredUser.findFirst({
+      where: { userEmail: user.email },
+    });
+
+    if (!registration) {
+      // Clear any partial cookies and redirect to an error page
+      res
+        .clearCookie('accessToken')
+        .clearCookie('refreshToken')
+        .status(403)
+        .redirect(
+          'http://localhost:5173/unauthorized?reason=not_registered',
+        );
+      return;
+    }
+  }
+  // ── End enrollment gate ───────────────────────────────────────────────────
 
   const { accessToken, refreshToken } =
     generateAccessTokenAndRefreshToken(user);
