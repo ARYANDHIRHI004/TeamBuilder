@@ -15,7 +15,9 @@ import {
   Eye,
   Users,
   Loader2,
+  UserPlus,
 } from "lucide-react";
+import { AddStudentManualDialog } from "@/components/AddStudentManualDialog";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -84,6 +86,7 @@ interface AdminCoursesViewProps {
   onArchiveCourse?: (course: AdminCourseItem) => void;
   onDeleteCourse?: (course: AdminCourseItem) => void;
   onViewCourse?: (course: AdminCourseItem) => void;
+  onStudentsEnrolled?: () => void;
 }
 
 interface UserCoursesViewProps {
@@ -137,9 +140,9 @@ export default function Courses() {
           id: c.id,
           title: c.courseName,
           code: c.id.substring(0, 8),
-          instructor: c.createdBy || "Unknown", // Might need to populate creater name
-          studentCount: c.registeredUsers?.length || 0,
-          teamCount: c.teams?.length || 0,
+          instructor: c.creater?.name || "Unknown",
+          studentCount: c._count?.registeredUsers ?? 0,
+          teamCount: c._count?.teams ?? 0,
           status: "Published",
           createdAt: c.createdAt,
         })) || [];
@@ -183,6 +186,7 @@ export default function Courses() {
         courses={courses}
         loading={loading}
         onCreateCourse={handleCreateCourse}
+        onStudentsEnrolled={fetchCourses}
       />
     );
   }
@@ -199,12 +203,14 @@ const AdminCoursesView: React.FC<AdminCoursesViewProps> = ({
   onArchiveCourse,
   onDeleteCourse,
   onViewCourse,
+  onStudentsEnrolled,
 }) => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<CreateCourseInput>(EMPTY_FORM);
   const [creating, setCreating] = useState(false);
   const [formError, setFormError] = useState("");
+  const [enrollCourse, setEnrollCourse] = useState<AdminCourseItem | null>(null);
 
   const stats = useMemo(
     () => ({
@@ -334,8 +340,13 @@ const AdminCoursesView: React.FC<AdminCoursesViewProps> = ({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => onViewCourse?.(c)}>
-                            <Eye /> View
+                          <DropdownMenuItem onClick={() => setEnrollCourse(c)}>
+                            <UserPlus /> Add student
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link to={`/courses/${c.id}`}>
+                              <Eye /> View course
+                            </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => onEditCourse?.(c)}>
                             <Pencil /> Edit
@@ -368,6 +379,21 @@ const AdminCoursesView: React.FC<AdminCoursesViewProps> = ({
           )}
         </CardContent>
       </Card>
+
+      {enrollCourse && (
+        <AddStudentManualDialog
+          open={Boolean(enrollCourse)}
+          onOpenChange={(next) => {
+            if (!next) setEnrollCourse(null);
+          }}
+          courseId={enrollCourse.id}
+          courseName={enrollCourse.title}
+          onEnrolled={() => {
+            setEnrollCourse(null);
+            onStudentsEnrolled?.();
+          }}
+        />
+      )}
 
       {/* Create Course dialog */}
       <Dialog open={open} onOpenChange={handleOpenChange}>

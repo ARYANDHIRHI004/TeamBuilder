@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { isAdminUser } from "@/lib/authUtils";
-import { getCourseById, getPeersAccount } from "@/lib/courseApis";
+import { getCourseById, getPeersAccount, getAllPeersForUser } from "@/lib/courseApis";
 import axiosInstance from "@/lib/axios";
-import { Search, Users, UserCheck, UserX, BookOpen } from "lucide-react";
+import { Search, Users, UserCheck, UserX, BookOpen, MessageCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -15,18 +15,23 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 import { UploadStudentsButton, type StudentRow, type UploadResult } from "@/components/StudentCsvUploadDialog";
+import PeerChatPanel, { type ChatPeer } from "@/components/PeerChatPanel";
+import GiveFeedbackDialog from "@/components/GiveFeedbackDialog";
+import { MessageSquare } from "lucide-react";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 export interface PeerRecord {
   id: string;
   name: string;
   email: string;
+  courseId: string;
   course: string;
   team?: string;
   status: "Active" | "Inactive";
-  progress: number; // 0-100
+  progress: number;
   joinedAt: string;
 }
 
@@ -35,6 +40,8 @@ interface AllPeersPageProps {
   loading?: boolean;
   isAdmin?: boolean;
   onUploadStudents?: (students: StudentRow[]) => Promise<UploadResult | void>;
+  onPeerClick?: (peer: PeerRecord) => void;
+  showFeedback?: boolean;
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -60,7 +67,14 @@ function EmptyState({ label }: { label: string }) {
 const ALL = "__all__";
 
 // ── Component View ──────────────────────────────────────────────────────────────
-const AllPeersPageView: React.FC<AllPeersPageProps> = ({ peers = [], loading = false, isAdmin = false, onUploadStudents }) => {
+const AllPeersPageView: React.FC<AllPeersPageProps> = ({
+  peers = [],
+  loading = false,
+  isAdmin = false,
+  onUploadStudents,
+  onPeerClick,
+  showFeedback = false,
+}) => {
   const [search, setSearch] = useState("");
   const [courseFilter, setCourseFilter] = useState(ALL);
   const [statusFilter, setStatusFilter] = useState(ALL);
@@ -87,16 +101,16 @@ const AllPeersPageView: React.FC<AllPeersPageProps> = ({ peers = [], loading = f
 
   return (
     <div className="space-y-6 p-6 font-sans">
-      {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-foreground">All Peers</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Every student enrolled across your courses.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {onPeerClick ? "Click a peer to open a chat." : "Every student enrolled across your courses."}
+          </p>
         </div>
         {onUploadStudents && <UploadStudentsButton isAdmin={isAdmin} onUpload={onUploadStudents} />}
       </div>
 
-      {/* Stat cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[
           { icon: Users, label: "Total Peers", value: stats.total },
@@ -118,7 +132,6 @@ const AllPeersPageView: React.FC<AllPeersPageProps> = ({ peers = [], loading = f
         ))}
       </div>
 
-      {/* Table card */}
       <Card className="shadow-sm">
         <CardHeader className="flex-col gap-3 space-y-0 lg:flex-row lg:items-center lg:justify-between">
           <div>
@@ -170,11 +183,18 @@ const AllPeersPageView: React.FC<AllPeersPageProps> = ({ peers = [], loading = f
                   <TableHead>Status</TableHead>
                   <TableHead className="w-40">Progress</TableHead>
                   <TableHead>Joined</TableHead>
+                  {(onPeerClick || showFeedback) && (
+                    <TableHead className="w-32 text-right">Actions</TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.map((p) => (
-                  <TableRow key={p.id}>
+                  <TableRow
+                    key={`${p.id}-${p.courseId}`}
+                    className={onPeerClick ? "cursor-pointer hover:bg-muted/50" : undefined}
+                    onClick={() => onPeerClick?.(p)}
+                  >
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
@@ -183,7 +203,11 @@ const AllPeersPageView: React.FC<AllPeersPageProps> = ({ peers = [], loading = f
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="text-sm font-semibold text-foreground">{p.name}</p>
+                          <p className="text-sm font-semibold text-foreground">
+                            <Link to={`/profile/${p.id}`} className="hover:underline text-primary" onClick={(e) => e.stopPropagation()}>
+                              {p.name}
+                            </Link>
+                          </p>
                           <p className="text-xs text-muted-foreground">{p.email}</p>
                         </div>
                       </div>
@@ -202,6 +226,34 @@ const AllPeersPageView: React.FC<AllPeersPageProps> = ({ peers = [], loading = f
                       <Progress value={p.progress} className="h-1.5" />
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{formatDate(p.joinedAt)}</TableCell>
+                    {(onPeerClick || showFeedback) && (
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                          {showFeedback && (
+                            <GiveFeedbackDialog
+                              targetLabel={p.name}
+                              givenToUserId={p.id}
+                              trigger={
+                                <Button type="button" size="sm" variant="ghost" title="Give feedback">
+                                  <MessageSquare className="h-4 w-4" />
+                                </Button>
+                              }
+                            />
+                          )}
+                          {onPeerClick && (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="ghost"
+                              className="gap-1"
+                              onClick={() => onPeerClick(p)}
+                            >
+                              <MessageCircle className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
@@ -215,40 +267,54 @@ const AllPeersPageView: React.FC<AllPeersPageProps> = ({ peers = [], loading = f
   );
 };
 
+function mapPeerFromApi(u: any, courseName: string, courseId: string): PeerRecord {
+  return {
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    courseId: u.courseId || courseId,
+    course: u.courseName || courseName,
+    team: u.teamName || undefined,
+    status: "Active",
+    progress: 0,
+    joinedAt: u.joinedAt || u.createdAt || "",
+  };
+}
+
 export default function Peers() {
   const { coursesId } = useParams<{ coursesId: string }>();
   const [peers, setPeers] = useState<PeerRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [courseName, setCourseName] = useState("");
+  const [chatPeer, setChatPeer] = useState<ChatPeer | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
 
   const authUser = useSelector((state: any) => state.auth.user);
   const isAdmin = isAdminUser(authUser);
+  const canChat = !isAdmin;
 
   const fetchPeers = async () => {
-    if (!coursesId) return;
     setLoading(true);
     try {
-      const [courseRes, peersRes] = await Promise.all([
-        getCourseById(coursesId),
-        getPeersAccount(coursesId)
-      ]);
-      console.log(courseRes, peersRes);
-      const cName = courseRes.data?.courseName || "Unknown Course";
-      setCourseName(cName);
-      
-      const mappedPeers: PeerRecord[] = (peersRes.data || []).map((u: any) => ({
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        course: cName,
-        status: "Active",
-        progress: 0,
-        joinedAt: u.createdAt
-      }));
-      
-      setPeers(mappedPeers);
+      if (coursesId) {
+        const [courseRes, peersRes] = await Promise.all([
+          getCourseById(coursesId),
+          getPeersAccount(coursesId),
+        ]);
+        const cName = courseRes.data?.courseName || "Unknown Course";
+        const mappedPeers: PeerRecord[] = (peersRes.data || []).map((u: any) =>
+          mapPeerFromApi(u, cName, coursesId)
+        );
+        setPeers(mappedPeers);
+      } else {
+        const peersRes = await getAllPeersForUser();
+        const mappedPeers: PeerRecord[] = (peersRes.data || []).map((u: any) =>
+          mapPeerFromApi(u, u.courseName || "Course", u.courseId)
+        );
+        setPeers(mappedPeers);
+      }
     } catch (err) {
       console.error(err);
+      setPeers([]);
     } finally {
       setLoading(false);
     }
@@ -260,25 +326,40 @@ export default function Peers() {
 
   const handleUploadStudents = async (students: StudentRow[]): Promise<UploadResult> => {
     if (!coursesId) throw new Error("No course ID");
-    
-    // The backend addStudentManual route supports an array of students.
+
     const res = await axiosInstance.post(`/courses/${coursesId}/add-student-manual`, { students });
     const data = res.data.data;
-    
-    // Re-fetch peers after uploading
+
     fetchPeers();
-    
+
     return {
       successCount: data.addedCount || 0,
     };
   };
 
+  const handlePeerClick = (peer: PeerRecord) => {
+    if (!canChat) return;
+    setChatPeer({
+      id: peer.id,
+      name: peer.name,
+      email: peer.email,
+      courseId: peer.courseId,
+      course: peer.course,
+    });
+    setChatOpen(true);
+  };
+
   return (
-    <AllPeersPageView 
-      peers={peers} 
-      loading={loading} 
-      isAdmin={isAdmin}
-      onUploadStudents={isAdmin ? handleUploadStudents : undefined}
-    />
+    <>
+      <AllPeersPageView
+        peers={peers}
+        loading={loading}
+        isAdmin={isAdmin}
+        onUploadStudents={isAdmin && coursesId ? handleUploadStudents : undefined}
+        onPeerClick={canChat ? handlePeerClick : undefined}
+        showFeedback={canChat}
+      />
+      <PeerChatPanel peer={chatPeer} open={chatOpen} onOpenChange={setChatOpen} />
+    </>
   );
 }

@@ -47,7 +47,22 @@ export const addStudentManual = async (courseId: string, userEmail: string) => {
   return res.data;
 };
 
+export const addStudentsManual = async (courseId: string, emails: string[]) => {
+  const res = await axiosInstance.post(`/courses/${courseId}/add-student-manual`, { emails });
+  return res.data;
+};
+
 export const getPeersAccount = async (courseId: string) => {
   const res = await axiosInstance.get(`/courses/${courseId}/get-peers-account`);
+  return res.data;
+};
+
+export const getAllPeersForUser = async () => {
+  const res = await axiosInstance.get("/courses/get-all-peers");
+  return res.data;
+};
+
+export const syncRegisteredStudents = async () => {
+  const res = await axiosInstance.post("/courses/sync-registered-students");
   return res.data;
 };

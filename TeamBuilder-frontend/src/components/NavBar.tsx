@@ -1,6 +1,6 @@
 import { ModeToggle } from "@/components/mode-toggle";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Bell, Shield, User } from "lucide-react";
+import { ArrowLeft, Bell, Shield } from "lucide-react";
 import { useSelector } from "react-redux";
 import { extractUser, getUserRoles, isAdminUser } from "@/lib/authUtils";
 

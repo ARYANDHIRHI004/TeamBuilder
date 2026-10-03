@@ -1,10 +1,10 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { authRoutes } from "./AuthRoutes";
 import ProtectedRoutes from "./ProtectedRoutes";
-import RoleProtectedRoute from "./RoleProtectedRoute";
 import Layout from "../app/Layout";
 import { dashboardRoutes } from "./DashboardRoutes";
 import { courseRoutes } from "./CoursesRoutes";
+import { adminRoutes } from "./AdminRoutes";
 import PublicRoutes from "./PublicRoute";
 import Unauthorized from "@/pages/Unauthorized";
 
@@ -25,6 +25,7 @@ const router = createBrowserRouter([
           // Shared routes: accessible to ALL logged-in users (admin + students)
           ...dashboardRoutes,
           ...courseRoutes,
+          ...adminRoutes,
         ],
       },
     ],

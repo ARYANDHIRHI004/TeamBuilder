@@ -20,6 +20,10 @@ const dashboardRoutes = [
     path: "/profile",
     element: <Profile />,
   },
+  {
+    path: "/profile/:userId",
+    element: <Profile />,
+  },
 ];
 
 export { dashboardRoutes };

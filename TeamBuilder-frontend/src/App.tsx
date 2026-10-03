@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 
 import { useEffect, useState } from "react";
-import { getMe } from "./features/authSlice";
+import { getMe, logout } from "./features/authSlice";
 import { loginUser } from "./lib/authApis";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes";
@@ -19,7 +19,8 @@ function App() {
         setLoading(true);
         const data = await loginUser();
         dispatch(getMe(data));
-        // console.log(data)
+      } catch {
+        dispatch(logout());
       } finally {
         setLoading(false);
       }

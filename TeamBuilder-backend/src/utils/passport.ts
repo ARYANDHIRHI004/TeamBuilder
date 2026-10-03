@@ -31,6 +31,10 @@ passport.use(
             }
         })
 
+        if (existedUser?.accountStatus === 'INACTIVE') {
+            return done(new ApiError('Your account has been blocked. Contact an administrator.', 403), null);
+        }
+
         if(!existedUser){
             const user:any = await prisma.user.create({
                 data: {

@@ -8,6 +8,9 @@ import { courseRouter } from './routes/courses.routes.js'
 import teamRouter from './routes/team.routes.js'
 import notesRouter from './routes/notes.routes.js'
 import historyRouter from './routes/history.routes.js'
+import messageRouter from './routes/message.routes.js'
+import reviewRouter from './routes/review.routes.js'
+import adminRouter from './routes/admin.routes.js'
 
 function createApp(): Application {
   const app: Application = Express()
@@ -16,7 +19,7 @@ function createApp(): Application {
     cors({
       origin: 'http://localhost:5173',
       allowedHeaders: ['Content-Type', 'Authorization'],
-      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
       credentials: true,
     }),
   )
@@ -33,6 +36,9 @@ function createApp(): Application {
   app.use('/api/v1/team/', teamRouter)
   app.use('/api/v1/notes/', notesRouter)
   app.use('/api/v1/history/', historyRouter)
+  app.use('/api/v1/messages/', messageRouter)
+  app.use('/api/v1/reviews/', reviewRouter)
+  app.use('/api/v1/admin/', adminRouter)
 
   return app
 }

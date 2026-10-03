@@ -166,11 +166,16 @@ export function AdminSidebarContent({
           <SidebarGroupLabel>Manage</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
+              {navItems.map((item) => {
+                const isActive =
+                  item.url === "/dashboard"
+                    ? location.pathname === "/dashboard"
+                    : location.pathname === item.url || location.pathname.startsWith(`${item.url}/`);
+                return (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={location.pathname === item.url}
+                    isActive={isActive}
                     tooltip={item.title}
                   >
                     <Link to={item.url}>
@@ -179,7 +184,8 @@ export function AdminSidebarContent({
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              ))}
+              );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -190,7 +196,7 @@ export function AdminSidebarContent({
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={location.pathname === "/admin/settings"}
+                  isActive={location.pathname.startsWith("/admin/settings")}
                   tooltip="Settings"
                 >
                   <Link to="/admin/settings">

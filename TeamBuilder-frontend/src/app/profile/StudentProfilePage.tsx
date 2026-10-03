@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   PieChart,
   Pie,
@@ -29,6 +29,8 @@ import {
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
@@ -92,6 +94,9 @@ interface StudentProfilePageProps {
   historyEvents?: HistoryEvent[];
   historyTrend?: HistoryTrendPoint[];
   loading?: boolean;
+  canEdit?: boolean;
+  saving?: boolean;
+  onSaveProfile?: (data: { name: string; address?: string }) => void;
   onBack?: () => void;
 }
 
@@ -352,7 +357,7 @@ function Timeline({ events }: { events: HistoryEvent[] }) {
 }
 
 // ── Main Component ─────────────────────────────────────────────────────────
-const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
+function StudentProfilePage({
   student,
   activity = [],
   progressBreakdown = [],
@@ -361,8 +366,22 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
   historyEvents = [],
   historyTrend = [],
   loading = false,
+  canEdit = false,
+  saving = false,
+  onSaveProfile,
   onBack,
-}) => {
+}: StudentProfilePageProps) {
+  const [editMode, setEditMode] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
+  const [addressDraft, setAddressDraft] = useState("");
+
+  useEffect(() => {
+    if (student) {
+      setNameDraft(student.name);
+      setAddressDraft(student.address || "");
+    }
+  }, [student]);
+
   return (
     <div className="space-y-6 p-6 font-sans">
       {onBack && (
@@ -443,19 +462,75 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
 
           {/* Personal details */}
           <Card className="shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base">Personal Details</CardTitle>
-              <CardDescription>Contact and account information.</CardDescription>
+            <CardHeader className="flex flex-row items-start justify-between gap-4">
+              <div>
+                <CardTitle className="text-base">Personal Details</CardTitle>
+                <CardDescription>
+                  {canEdit
+                    ? "Only you can edit your profile. Others can view this page."
+                    : "View-only profile."}
+                </CardDescription>
+              </div>
+              {canEdit && onSaveProfile && !editMode && (
+                <Button variant="outline" size="sm" onClick={() => setEditMode(true)}>
+                  Edit profile
+                </Button>
+              )}
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
-                <DetailRow icon={Hash} label="Roll Number" value={student.rollNumber} />
-                <DetailRow icon={Building2} label="Department" value={student.department} />
-                <DetailRow icon={Phone} label="Phone" value={student.phone} />
-                <DetailRow icon={MapPin} label="Address" value={student.address} />
-                <DetailRow icon={CalendarDays} label="Joined On" value={formatDate(student.joinedAt)} />
-                <DetailRow icon={Clock} label="Last Active" value={student.lastActiveAt ? formatDate(student.lastActiveAt) : "—"} />
-              </div>
+              {canEdit && editMode && onSaveProfile ? (
+                <form
+                  className="space-y-4 max-w-md"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    onSaveProfile({ name: nameDraft, address: addressDraft });
+                    setEditMode(false);
+                  }}
+                >
+                  <div className="space-y-2">
+                    <Label htmlFor="profile-name">Name</Label>
+                    <Input
+                      id="profile-name"
+                      value={nameDraft}
+                      onChange={(e) => setNameDraft(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="profile-address">Address</Label>
+                    <Input
+                      id="profile-address"
+                      value={addressDraft}
+                      onChange={(e) => setAddressDraft(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit" disabled={saving}>
+                      {saving ? "Saving…" : "Save changes"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => {
+                        setEditMode(false);
+                        setNameDraft(student.name);
+                        setAddressDraft(student.address || "");
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <div className="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+                  <DetailRow icon={Hash} label="Roll Number" value={student.rollNumber} />
+                  <DetailRow icon={Building2} label="Department" value={student.department} />
+                  <DetailRow icon={Phone} label="Phone" value={student.phone} />
+                  <DetailRow icon={MapPin} label="Address" value={student.address} />
+                  <DetailRow icon={CalendarDays} label="Joined On" value={formatDate(student.joinedAt)} />
+                  <DetailRow icon={Clock} label="Last Active" value={student.lastActiveAt ? formatDate(student.lastActiveAt) : "—"} />
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -557,6 +632,6 @@ const StudentProfilePage: React.FC<StudentProfilePageProps> = ({
       )}
     </div>
   );
-};
+}
 
 export default StudentProfilePage;

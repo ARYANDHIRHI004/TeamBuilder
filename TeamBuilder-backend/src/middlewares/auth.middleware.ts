@@ -24,8 +24,23 @@ export const verifyJwt = async (
       email: JwtPayload
     }
 
-    const decodedToken = jwt.verify(token, env.ACCESS_TOKEN_SECRET)
+    const decodedToken = jwt.verify(token, env.ACCESS_TOKEN_SECRET) as {
+      _id: string
+      name?: string
+      email?: string
+    }
     console.log(decodedToken)
+
+    const userId = decodedToken._id
+    if (userId) {
+      const dbUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { accountStatus: true },
+      })
+      if (dbUser?.accountStatus === 'INACTIVE') {
+        throw new ApiError('Your account has been blocked. Contact an administrator.', 403)
+      }
+    }
 
     req.user = decodedToken
     next()

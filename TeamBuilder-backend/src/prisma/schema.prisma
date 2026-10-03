@@ -17,6 +17,12 @@ enum STATUS {
   INACTIVE
 }
 
+enum TeamApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum Teamroles {
   TEAM_LEAD
   MEMBER
@@ -37,6 +43,7 @@ model User {
   roles             SystemRoles[]
 
   isEmailVerified   Boolean  @default(false)
+  accountStatus     STATUS   @default(ACTIVE)
 
   sessions          Session[]
   teamMemberships   TeamMember[]
@@ -48,6 +55,10 @@ model User {
 
   histories         History[] @relation("UserHistory")
   coursesCreaed Course[]
+
+  messagesSent      DirectMessage[] @relation("MessagesSent")
+  messagesReceived  DirectMessage[] @relation("MessagesReceived")
+  teamChatMessages  TeamChatMessage[] @relation("TeamChatSent")
 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -71,6 +82,7 @@ model Course {
 
   teams             Team[]
   registeredUsers   RegisteredUser[]
+  directMessages    DirectMessage[]
 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -87,13 +99,16 @@ model Team {
   course            Course   @relation(fields: [courseId], references: [id])
 
   status            STATUS   @default(ACTIVE)
-  hiring            STATUS @default(ACTIVE)
+  hiring            STATUS @default(INACTIVE)
+  approvalStatus    TeamApprovalStatus @default(PENDING)
 
   members           TeamMember[]
   applications      TeamJoiningApplication[]
   notes             Note[]
 
   reviewsReceived   Review[] @relation("TeamReviews")
+
+  chatMessages      TeamChatMessage[]
 
   histories         History[] @relation("TeamHistory")
 
@@ -221,4 +236,50 @@ model History {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model DirectMessage {
+  id          String   @id @default(uuid())
+
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  senderId    String
+  sender      User     @relation("MessagesSent", fields: [senderId], references: [id], onDelete: Cascade)
+
+  receiverId  String
+  receiver    User     @relation("MessagesReceived", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  content     String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([courseId, senderId, receiverId])
+}
+
+model TeamChatMessage {
+  id           String   @id @default(uuid())
+
+  teamId       String
+  team         Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  senderId     String
+  sender       User     @relation("TeamChatSent", fields: [senderId], references: [id], onDelete: Cascade)
+
+  content      String?
+  resourceUrl  String?
+  resourceName String?
+  resourceMime String?
+
+  isPinned     Boolean  @default(false)
+  pinnedAt     DateTime?
+
+  isDeleted    Boolean  @default(false)
+  deletedAt    DateTime?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([teamId, createdAt])
 }
